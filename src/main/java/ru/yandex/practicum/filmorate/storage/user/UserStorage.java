@@ -1,11 +1,15 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import ru.yandex.practicum.filmorate.model.User;
 
-public interface UserStorage {
-    void add(User user);
+import java.util.Map;
 
-    void update(User user);
+public interface UserStorage {
+    Map<Integer, User> allUsers();
+
+    User add(User user);
+
+    User update(User user);
 
     void remove(Integer id);
 }
