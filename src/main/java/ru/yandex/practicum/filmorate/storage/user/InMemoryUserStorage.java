@@ -54,14 +54,14 @@ public class InMemoryUserStorage implements UserStorage {
             user.setId(id);
             users.put(id, user);
             id++;
-            log.debug("Добавлен пользователь " + user);
+            log.debug("Добавлен пользователь {}.", user);
         }
         return user;
     }
 
     public User update(User user) {
         if (!users.containsKey(user.getId())) {
-            throw new ElementNotFoundException("пользователь" + user.getId());
+            throw new ElementNotFoundException("пользователь " + user.getId());
         }
         User updateUser = users.get(user.getId());
         if (checkUpdateValidData(user)) {
@@ -70,13 +70,13 @@ public class InMemoryUserStorage implements UserStorage {
             updateUser.setName(user.getName());
             updateUser.setBirthday(user.getBirthday());
             users.put(user.getId(), updateUser);
-            log.debug("Данные пользователя " + updateUser + " обновлены.");
+            log.debug("Обновлены данные пользователя {}.", updateUser);
         }
         return updateUser;
     }
 
     public void remove(Integer id) {
         users.remove(id);
-        log.debug("Удален пользователь " + id);
+        log.debug("Удален пользователь {}", id);
     }
 }

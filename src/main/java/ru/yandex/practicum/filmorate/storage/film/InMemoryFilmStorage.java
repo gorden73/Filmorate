@@ -14,7 +14,7 @@ import java.util.Map;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
-
+    private final LocalDate movieBirthday = LocalDate.of(1895, 12, 28);
     private int id = 1;
 
     private boolean checkValidData(Film film) {
@@ -26,7 +26,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.error("Описание пустое или состоит из пробелов.");
             throw new ValidationException("Описание не должно быть пустым или состоять из пробелов.");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+        if (film.getReleaseDate().isBefore(movieBirthday)) {
             log.error("Дата выхода фильма в прокат не может быть раньше 28.12.1895.", InMemoryFilmStorage.class);
             throw new ValidationException("Дата выхода фильма в прокат не может быть раньше 28.12.1895.");
         }
@@ -70,7 +70,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             film.setId(id);
             films.put(id, film);
             id++;
-            log.debug("Добавлен фильм " + film);
+            log.debug("Добавлен фильм {}.", film);
         }
         return film;
     }
@@ -86,7 +86,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             updateFilm.setReleaseDate(film.getReleaseDate());
             updateFilm.setDuration(film.getDuration());
             films.put(film.getId(), updateFilm);
-            log.debug("Обновлен фильм " + updateFilm);
+            log.debug("Обновлен фильм {}.", updateFilm);
             return updateFilm;
         }
         return film;
@@ -94,6 +94,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public void remove(Integer id) {
         films.remove(id);
-        log.debug("Удален фильм " + id);
+        log.debug("Удален фильм {}.", id);
     }
 }
