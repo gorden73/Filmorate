@@ -4,8 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Collection;
 
@@ -27,43 +28,43 @@ class FilmControllerTest {
 
     @BeforeEach
     void start() {
-        controller = new FilmController();
+        controller = new FilmController(new FilmService(new InMemoryFilmStorage()));
         createFilmsForTests();
     }
 
     private void createFilmsForTests() {
-        film = new Film(1,"The Rock",  "Starring Nicolas Cage and Sean Connery",
-                LocalDate.of(1996, 6, 7), Duration.ofMinutes(136));
-        film1 = new Film(2,"", "Starring Nicolas Cage and Sean Connery",
-                LocalDate.of(1996, 6, 7), Duration.ofMinutes(136));
-        film2 = new Film( 3,"The Rock", "Disillusioned Brigadier General Francis Hummel and his " +
+        film = new Film(1, "The Rock", "Starring Nicolas Cage and Sean Connery",
+                LocalDate.of(1996, 6, 7), 136);
+        film1 = new Film(1, "", "Starring Nicolas Cage and Sean Connery",
+                LocalDate.of(1996, 6, 7), 136);
+        film2 = new Film(1, "The Rock", "Disillusioned Brigadier General Francis Hummel and his " +
                 "second-in-command Major Tom Baxter lead a rogue group of U.S. Force Recon Marines against a heavily " +
                 "guarded naval weapons depot to steal a stockpile of 16 VX gas-loaded M55 rockets, ultimately losing " +
                 "one of their own men in the process. The next day, along with newly recruited Captains Frye and " +
                 "Darrow, Hummel and his men seize control of Alcatraz Island, taking 81 tourists hostage. ",
-                LocalDate.of(1996, 6, 7), Duration.ofMinutes(136));
-        film3 = new Film( 1,"The Rock3", "Starring Nicolas Cage and Sean Connery3",
-                LocalDate.of(1895, 12, 27), Duration.ofMinutes(131));
-        film4 = new Film( 1,"The Rock4", "Starring Nicolas Cage and Sean Connery4",
-                LocalDate.of(1994, 6, 7), Duration.ofMinutes(0));
-        film5 = new Film( 1,"The Rock5", "Starring Nicolas Cage and Sean Connery5",
-                LocalDate.of(1996, 5, 7), Duration.ofMinutes(-8));
-        film6 = new Film( 1,"The Rock6", "Starring Nicolas Cage and Sean Connery6",
-                LocalDate.of(1895, 12, 28), Duration.ofMinutes(132));
-        film7 = new Film(1,"The Rock7", "Starring Nicolas Cage and Sean Connery7",
-                LocalDate.of(1895, 12, 29), Duration.ofMinutes(130));
-        film8 = new Film(1,"The Rock12", "Disillusioned Brigadier General Francis Hummel and his " +
+                LocalDate.of(1996, 6, 7), 136);
+        film3 = new Film(1, "The Rock3", "Starring Nicolas Cage and Sean Connery3",
+                LocalDate.of(1895, 12, 27), 131);
+        film4 = new Film(1, "The Rock4", "Starring Nicolas Cage and Sean Connery4",
+                LocalDate.of(1994, 6, 7), 0);
+        film5 = new Film(1, "The Rock5", "Starring Nicolas Cage and Sean Connery5",
+                LocalDate.of(1996, 5, 7), -8);
+        film6 = new Film(1, "The Rock6", "Starring Nicolas Cage and Sean Connery6",
+                LocalDate.of(1895, 12, 28), 132);
+        film7 = new Film(1, "The Rock7", "Starring Nicolas Cage and Sean Connery7",
+                LocalDate.of(1895, 12, 29), 130);
+        film8 = new Film(1, "The Rock12", "Disillusioned Brigadier General Francis Hummel and his " +
                 "second-in-command Major Tom Baxter lead a rogue group of U.S. Force Recon Marines against a heavily " +
                 "guarded naval weapons depot to steal a stockp",
-                LocalDate.of(1994, 6, 7), Duration.ofMinutes(134));
-        film9 = new Film(1,"The Rock3", "Disillusioned Brigadier General Francis Hummel and his " +
+                LocalDate.of(1994, 6, 7), 134);
+        film9 = new Film(1, "The Rock3", "Disillusioned Brigadier General Francis Hummel and his " +
                 "second-in-command Major Tom Baxter lead a rogue group of U.S. Force Recon Marines against a heavily " +
                 "guarded naval weapons depot to steal a stock",
-                LocalDate.of(1993, 6, 7), Duration.ofMinutes(137));
-        film10 = new Film(1,"The Rock1", "Disillusioned Brigadier General Francis Hummel and his " +
+                LocalDate.of(1993, 6, 7), 137);
+        film10 = new Film(1, "The Rock1", "Disillusioned Brigadier General Francis Hummel and his " +
                 "second-in-command Major Tom Baxter lead a rogue group of U.S. Force Recon Marines against a heavily " +
                 "guarded naval weapons depot to steal a stock",
-                LocalDate.of(1995, 6, 7), Duration.ofMinutes(135));
+                LocalDate.of(1995, 6, 7), 135);
     }
 
     @Test

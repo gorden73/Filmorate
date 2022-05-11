@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -24,23 +26,23 @@ class UserControllerTest {
 
     @BeforeEach
     public void start() {
-        controller = new UserController();
+        controller = new UserController(new UserService(new InMemoryUserStorage()));
         createUsersForTests();
     }
 
     private void createUsersForTests() {
         user = new User(1, "salvador@mail.ru", "chico", "Poco",
-                        LocalDate.of(1990, 10,6));
+                LocalDate.of(1990, 10, 6));
         user1 = new User(1, "", "chico1", "Poco1",
-                LocalDate.of(1991, 10,6));
+                LocalDate.of(1991, 10, 6));
         user2 = new User(1, "salvador.ru", "chico2", "Poco2",
-                LocalDate.of(1992, 10,6));
+                LocalDate.of(1992, 10, 6));
         user3 = new User(1, "salvador@t.ru", "", "Poco3",
-                LocalDate.of(1993, 10,6));
+                LocalDate.of(1993, 10, 6));
         user4 = new User(1, "salvador@t.ru", "chico and son", "Poco4",
-                LocalDate.of(1994, 10,6));
+                LocalDate.of(1994, 10, 6));
         user5 = new User(1, "salvador@t.ru5", "chico5", "",
-                LocalDate.of(1995, 10,6));
+                LocalDate.of(1995, 10, 6));
         user6 = new User(1, "salvador@t.ru6", "chico6", "Poco6",
                 LocalDate.now().minusDays(1));
         user7 = new User(1, "salvador@t.ru7", "chico7", "Poco7",

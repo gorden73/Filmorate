@@ -2,14 +2,14 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 
-import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 @ToString
-@AllArgsConstructor
 public class Film {
     private Integer id;
     @NonNull
@@ -19,5 +19,15 @@ public class Film {
     @NonNull
     private LocalDate releaseDate;
     @NonNull
-    private Duration duration;
+    private Integer duration;
+    private Set<Integer> likes;
+
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = new HashSet<>();
+    }
 }
