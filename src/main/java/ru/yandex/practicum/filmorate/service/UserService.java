@@ -68,8 +68,8 @@ public class UserService {
         return friends;
     }
 
-    public Collection<String> getMutualFriends(Integer id, Integer id1) {
-        List<String> friendsNames = new ArrayList<>();
+    public Collection<User> getMutualFriends(Integer id, Integer id1) {
+        List<User> friendsNames = new ArrayList<>();
         if (!userStorage.allUsers().containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
@@ -80,7 +80,7 @@ public class UserService {
         Set<Integer> userSet1 = userStorage.allUsers().get(id1).getFriends();
         for (Integer user : userSet) {
             if (userSet1.contains(user)) {
-                friendsNames.add(userStorage.allUsers().get(user).getEmail());
+                friendsNames.add(userStorage.allUsers().get(user));
             }
         }
         return friendsNames;
