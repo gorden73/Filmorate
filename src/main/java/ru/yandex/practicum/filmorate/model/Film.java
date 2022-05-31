@@ -2,9 +2,9 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -21,13 +21,48 @@ public class Film {
     @NonNull
     private Integer duration;
     private Set<Integer> likes;
-
-    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration) {
+    private Mpa mpa;
+    private List<Integer> genres;
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.mpa = mpa;
         this.likes = new HashSet<>();
+        this.genres = new ArrayList<>();
     }
+
+    public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.likes = new HashSet<>();
+        this.genres = new ArrayList<>();
+    }
+
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
+                Set<Integer> likes, List<Integer> genres) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.likes = likes;
+        this.genres = genres;
+    }
+
+//    @PostConstruct
+//    private void addGenres(HashMap<Integer, String> genres) {
+//        genres.put(1, "Comedy");
+//        genres.put(2, "Drama");
+//        genres.put(3, "Cartoon");
+//        genres.put(4, "Thriller");
+//        genres.put(5, "Documentary");
+//        genres.put(6, "Action");
+//    }
 }
