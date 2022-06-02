@@ -18,12 +18,11 @@ import java.util.*;
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final LikesDao likesDao;
+
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.likesDao = likesDao;
     }
 
     @Override
@@ -86,9 +85,5 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sqlDeleteFilm, id);
         log.debug("Удален фильм {}", id);
         return id;
-    }
-
-    public Integer addLike(Integer filmId, Integer userId) {
-       return likesDao.addLike(filmId, userId);
     }
 }

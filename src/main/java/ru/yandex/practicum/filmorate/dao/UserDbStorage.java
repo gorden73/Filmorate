@@ -20,12 +20,10 @@ import java.util.Map;
 @Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final FriendDao friendDao;
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendDao friendDao) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.friendDao = friendDao;
     }
 
     @Override
@@ -91,9 +89,5 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sqlDeleteUser, id);
         log.debug("Удален пользователь {}", id);
         return id;
-    }
-
-    public User addToFriends(Integer id, Integer friendId) {
-        return friendDao.addToFriends(id, friendId);
     }
 }

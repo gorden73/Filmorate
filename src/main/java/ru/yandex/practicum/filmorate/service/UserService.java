@@ -4,20 +4,55 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FriendDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendDao friendDao;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendDao friendDao) {
         this.userStorage = userStorage;
+        this.friendDao = friendDao;
+    }
+
+    private boolean checkValidData(User user) {
+        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+            log.error("Введен пустой email или отсутствует символ @.", InMemoryUserStorage.class);
+            throw new ValidationException("Email не может быть пустым и должен содержать символ @.");
+        }
+        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+            log.error("Введен пустой логин или логин содержит пробелы.", InMemoryUserStorage.class);
+            throw new ValidationException("Логин не может быть пустым или содержать пробелы.");
+        }
+        if (user.getName().isBlank() || user.getName() == null) {
+            user.setName(user.getLogin());
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.error("Введена дата рождения из будущего.", InMemoryUserStorage.class);
+            throw new ValidationException("Дата рождения не может быть в будущем.");
+        }
+        return true;
+    }
+
+    private boolean checkUpdateValidData(User user) {
+        if (checkValidData(user)) {
+            if (!allUsers().containsKey(user.getId())) {
+                log.error("Введен неверный id.", InMemoryUserStorage.class);
+                throw new ValidationException("Пользователя с id" + user.getId() + " нет.");
+            }
+        }
+        return true;
     }
 
     public Map<Integer, User> allUsers() {
@@ -25,11 +60,17 @@ public class UserService {
     }
 
     public User add(User user) {
-        return userStorage.add(user);
+        if (checkValidData(user)) {
+            return userStorage.add(user);
+        }
+        return user;
     }
 
     public User update(User user) {
-        return userStorage.update(user);
+        if (checkUpdateValidData(user)) {
+            return userStorage.update(user);
+        }
+        return user;
     }
 
     public User addToFriends(Integer id, Integer friendId) {
@@ -42,10 +83,10 @@ public class UserService {
         }
         userMap.get(id).getFriends().add(friendId);
         userMap.get(friendId).getFriends().add(id);
-        return userMap.get(id); // нужно использовать FriendDao
+        return friendDao.addToFriends(id, friendId); // нужно использовать FriendDao
     }
 
-    public void removeFromFriends(Integer id, Integer removeFromId) {
+    public Integer removeFromFriends(Integer id, Integer removeFromId) {
         Map<Integer, User> userMap = userStorage.allUsers();
         if (!userStorage.allUsers().containsKey(id)) {
             throw new ElementNotFoundException("пользователь" + id);
@@ -55,6 +96,7 @@ public class UserService {
         }
         userMap.get(id).getFriends().remove(removeFromId);
         userMap.get(removeFromId).getFriends().remove(id);
+        return friendDao.removeFromFriends(id, removeFromId);
     }
 
     public Collection<User> getUserFriends(Integer id) {
