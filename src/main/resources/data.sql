@@ -1,7 +1,14 @@
-INSERT INTO genres (genre_id, name) 
-VALUES (0, 'COMEDY'),
-		(1, 'DRAMA'),
-		(2, 'CARTOON'),
-		(3, 'THRILLER'),
-		(4, 'DOCUMENTARY'),
-		(5, 'ACTION');
+INSERT INTO genres(name)
+VALUES ('COMEDY'),
+       ('DRAMA'),
+       ('CARTOON'),
+       ('THRILLER'),
+       ('DOCUMENTARY'),
+       ('ACTION');
+
+INSERT INTO mpa(name)
+VALUES ('G'),
+       ('PG'),
+       ('PG-13'),
+       ('R'),
+       ('NC-17');

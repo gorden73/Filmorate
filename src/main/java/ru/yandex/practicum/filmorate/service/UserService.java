@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -15,7 +16,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -41,7 +42,7 @@ public class UserService {
         }
         userMap.get(id).getFriends().add(friendId);
         userMap.get(friendId).getFriends().add(id);
-        return getUser(friendId);
+        return userMap.get(id); // нужно использовать FriendDao
     }
 
     public void removeFromFriends(Integer id, Integer removeFromId) {
@@ -91,5 +92,9 @@ public class UserService {
             throw new ElementNotFoundException("пользователь " + id);
         }
         return userStorage.allUsers().get(id);
+    }
+
+    public Integer remove(Integer id) {
+        return userStorage.remove(id);
     }
 }

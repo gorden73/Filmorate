@@ -86,14 +86,15 @@ public class InMemoryFilmStorage implements FilmStorage {
             updateFilm.setReleaseDate(film.getReleaseDate());
             updateFilm.setDuration(film.getDuration());
             films.put(film.getId(), updateFilm);
-            log.debug("Обновлен фильм {}.", updateFilm);
+            log.debug("Обновлен фильм {}.", updateFilm.getId());
             return updateFilm;
         }
         return film;
     }
 
-    public void remove(Integer id) {
+    public Integer remove(Integer id) {
         films.remove(id);
         log.debug("Удален фильм {}.", id);
+        return id;
     }
 }

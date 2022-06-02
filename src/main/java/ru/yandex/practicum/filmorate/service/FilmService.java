@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,7 +18,7 @@ public class FilmService {
     private final FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
@@ -33,15 +34,16 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public void remove(Integer id) {
-        filmStorage.remove(id);
+    public Integer remove(Integer id) {
+        return filmStorage.remove(id);
     }
 
-    public void addLike(Integer filmId, Integer userId) {
+    public Integer addLike(Integer filmId, Integer userId) {
         if (!filmStorage.allFilms().containsKey(filmId)) {
             throw new ElementNotFoundException("фильм" + filmId);
         }
         filmStorage.allFilms().get(filmId).getLikes().add(userId);
+        return userId;// надо использовать likesDao
     }
 
     public void removeLike(Integer filmId, Integer userId) {

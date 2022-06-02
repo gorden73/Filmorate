@@ -70,13 +70,14 @@ public class InMemoryUserStorage implements UserStorage {
             updateUser.setName(user.getName());
             updateUser.setBirthday(user.getBirthday());
             users.put(user.getId(), updateUser);
-            log.debug("Обновлены данные пользователя {}.", updateUser);
+            log.debug("Обновлены данные пользователя {}.", updateUser.getId());
         }
         return updateUser;
     }
 
-    public void remove(Integer id) {
+    public Integer remove(Integer id) {
         users.remove(id);
         log.debug("Удален пользователь {}", id);
+        return id;
     }
 }

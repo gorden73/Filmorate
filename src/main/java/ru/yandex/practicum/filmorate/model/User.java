@@ -27,6 +27,9 @@ public class User {
     private Map<Integer, Boolean> friendStatus;
     private Set<Integer> likedFilms;
 
+    public User() {
+        super();
+    }
     public User(Integer id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;

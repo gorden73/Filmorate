@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -17,10 +18,12 @@ import java.util.*;
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final LikesDao likesDao;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.likesDao = likesDao;
     }
 
     @Override
@@ -41,30 +44,51 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         Integer duration = rs.getInt("duration");
-        Mpa mpa = Mpa.values()[rs.getInt("mpa")];
+        int mpa = rs.getInt("mpa");
         String sqlLikes = "SELECT user_id FROM likes WHERE film_id = ?";
-        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(sqlLikes, (rs1, rowNum) -> (rs1.getInt(id))));
+        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(sqlLikes,
+                (rs1, rowNum1) -> (rs1.getInt("user_id")), id));
         String sqlGenres = "SELECT genre_id FROM film_genre WHERE film_id = ?";
-        List<Integer> genres = new ArrayList<>(jdbcTemplate.query(sqlGenres, (rs2, rowNum) -> (rs2.getInt(id))));
-        return new Film(id, name, description, releaseDate, duration, mpa, likes, genres);
+        List<Integer> genres = new ArrayList<>(jdbcTemplate.query(sqlGenres,
+                (rs2, rowNum) -> (rs2.getInt("genre_id")), id));
+        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
     }
 
     @Override
     public Film add(Film film) {
         String sqlAddFilm = "INSERT INTO films(name, description, release_date, duration, mpa) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sqlAddFilm, film.getName(), film.getDescription(), film.getReleaseDate(),
-                film.getDuration(), film.getMpa());
+                film.getDuration(), film.getMpa().getId());
         log.debug("Добавлен новый фильм {}.", film);
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select film_id from films where name = ? and description = ?" +
+                "and release_date = ? and duration = ? and mpa = ?", film.getName(), film.getDescription(),
+                film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
+        if(filmRows.next()) {
+           return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
+                   film.getReleaseDate(), film.getDuration(), film.getMpa());
+        }
         return film;
     }
 
     @Override
     public Film update(Film film) {
+        String sqlUpdateFilm = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, mpa = ? " +
+                "WHERE film_id = ?";
+        jdbcTemplate.update(sqlUpdateFilm, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                film.getMpa().getId(), film.getId());
+        log.debug("Обновлен фильм {}.", film.getId());
         return film;
     }
 
     @Override
-    public void remove(Integer id) {
+    public Integer remove(Integer id) {
+        String sqlDeleteFilm = "DELETE FROM films WHERE film_id = ?";
+        jdbcTemplate.update(sqlDeleteFilm, id);
+        log.debug("Удален фильм {}", id);
+        return id;
+    }
 
+    public Integer addLike(Integer filmId, Integer userId) {
+       return likesDao.addLike(filmId, userId);
     }
 }
