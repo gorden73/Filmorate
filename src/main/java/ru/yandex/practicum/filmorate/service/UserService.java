@@ -49,7 +49,7 @@ public class UserService {
         if (checkValidData(user)) {
             if (!allUsers().containsKey(user.getId())) {
                 log.error("Введен неверный id.", InMemoryUserStorage.class);
-                throw new ValidationException("Пользователя с id" + user.getId() + " нет.");
+                throw new ElementNotFoundException("пользователь с id" + user.getId());
             }
         }
         return true;

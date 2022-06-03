@@ -68,7 +68,7 @@ public class FilmService {
             }
             if (!allFilms().containsKey(film.getId())) {
                 log.error("Неверный id.", InMemoryFilmStorage.class);
-                throw new ValidationException("Фильма с id" + film.getId() + " нет.");
+                throw new ElementNotFoundException("фильм с id" + film.getId());
             }
         }
         return true;
