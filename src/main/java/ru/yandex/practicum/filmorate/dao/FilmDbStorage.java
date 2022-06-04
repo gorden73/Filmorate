@@ -60,11 +60,11 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDuration(), film.getMpa().getId());
         log.debug("Добавлен новый фильм {}.", film);
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select film_id from films where name = ? and description = ?" +
-                "and release_date = ? and duration = ? and mpa = ?", film.getName(), film.getDescription(),
+                        "and release_date = ? and duration = ? and mpa = ?", film.getName(), film.getDescription(),
                 film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
-        if(filmRows.next()) {
-           return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                   film.getReleaseDate(), film.getDuration(), film.getMpa());
+        if (filmRows.next()) {
+            return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
+                    film.getReleaseDate(), film.getDuration(), film.getMpa());
         }
         return film;
     }

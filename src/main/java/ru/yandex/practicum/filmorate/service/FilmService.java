@@ -97,39 +97,43 @@ public class FilmService {
     }
 
     public Integer addLike(Integer filmId, Integer userId) {
-        if (!filmStorage.allFilms().containsKey(filmId)) {
+        Map<Integer, Film> films = filmStorage.allFilms();
+        if (!films.containsKey(filmId)) {
             throw new ElementNotFoundException("фильм" + filmId);
         }
-        filmStorage.allFilms().get(filmId).getLikes().add(userId);
-        return likesDao.addLike(filmId, userId);// надо использовать likesDao
+        films.get(filmId).getLikes().add(userId);
+        return likesDao.addLike(filmId, userId);
     }
 
     public Integer removeLike(Integer filmId, Integer userId) {
-        if (!filmStorage.allFilms().containsKey(filmId)) {
+        Map<Integer, Film> films = filmStorage.allFilms();
+        if (!films.containsKey(filmId)) {
             throw new ElementNotFoundException("фильм" + filmId);
         }
         if (!getFilm(filmId).getLikes().contains(userId)) {
             throw new ElementNotFoundException("лайк пользователя " + userId);
         }
-        filmStorage.allFilms().get(filmId).getLikes().remove(userId);
+        films.get(filmId).getLikes().remove(userId);
         return likesDao.removeLike(filmId, userId);
     }
 
     public Collection<Film> getTopTenFilms(Integer count) {
-        if (count > 0 && count < filmStorage.allFilms().size()) {
-            return filmStorage.allFilms().values().stream()
+        Map<Integer, Film> films = filmStorage.allFilms();
+        if (count > 0 && count < films.size()) {
+            return films.values().stream()
                     .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
                     .limit(count).collect(Collectors.toList());
         }
-        return filmStorage.allFilms().values().stream()
+        return films.values().stream()
                 .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
-                .limit(filmStorage.allFilms().size()).collect(Collectors.toList());
+                .limit(films.size()).collect(Collectors.toList());
     }
 
     public Film getFilm(Integer id) {
-        if (!filmStorage.allFilms().containsKey(id)) {
+        Map<Integer, Film> films = filmStorage.allFilms();
+        if (!films.containsKey(id)) {
             throw new ElementNotFoundException("фильм" + id);
         }
-        return filmStorage.allFilms().get(id);
+        return films.get(id);
     }
 }

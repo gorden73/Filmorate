@@ -2,9 +2,15 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.dao.FilmDbStorage;
+import ru.yandex.practicum.filmorate.dao.LikesDao;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.TypeOfMpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
@@ -28,43 +34,45 @@ class FilmControllerTest {
 
     @BeforeEach
     void start() {
-        controller = new FilmController(new FilmService(new InMemoryFilmStorage()));
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        LikesDao likesDao = new LikesDao(new JdbcTemplate());
+        controller = new FilmController(new FilmService(filmStorage, likesDao));
         createFilmsForTests();
     }
 
     private void createFilmsForTests() {
         film = new Film(1, "The Rock", "Starring Nicolas Cage and Sean Connery",
-                LocalDate.of(1996, 6, 7), 136);
+                LocalDate.of(1996, 6, 7), 136, new Mpa(1));
         film1 = new Film(1, "", "Starring Nicolas Cage and Sean Connery",
-                LocalDate.of(1996, 6, 7), 136);
+                LocalDate.of(1996, 6, 7), 136, new Mpa(1));
         film2 = new Film(1, "The Rock", "Disillusioned Brigadier General Francis Hummel and his " +
                 "second-in-command Major Tom Baxter lead a rogue group of U.S. Force Recon Marines against a heavily " +
                 "guarded naval weapons depot to steal a stockpile of 16 VX gas-loaded M55 rockets, ultimately losing " +
                 "one of their own men in the process. The next day, along with newly recruited Captains Frye and " +
                 "Darrow, Hummel and his men seize control of Alcatraz Island, taking 81 tourists hostage. ",
-                LocalDate.of(1996, 6, 7), 136);
+                LocalDate.of(1996, 6, 7), 136, new Mpa(1));
         film3 = new Film(1, "The Rock3", "Starring Nicolas Cage and Sean Connery3",
-                LocalDate.of(1895, 12, 27), 131);
+                LocalDate.of(1895, 12, 27), 131, new Mpa(1));
         film4 = new Film(1, "The Rock4", "Starring Nicolas Cage and Sean Connery4",
-                LocalDate.of(1994, 6, 7), 0);
+                LocalDate.of(1994, 6, 7), 0, new Mpa(1));
         film5 = new Film(1, "The Rock5", "Starring Nicolas Cage and Sean Connery5",
-                LocalDate.of(1996, 5, 7), -8);
+                LocalDate.of(1996, 5, 7), -8, new Mpa(1));
         film6 = new Film(1, "The Rock6", "Starring Nicolas Cage and Sean Connery6",
-                LocalDate.of(1895, 12, 28), 132);
+                LocalDate.of(1895, 12, 28), 132, new Mpa(1));
         film7 = new Film(1, "The Rock7", "Starring Nicolas Cage and Sean Connery7",
-                LocalDate.of(1895, 12, 29), 130);
+                LocalDate.of(1895, 12, 29), 130, new Mpa(1));
         film8 = new Film(1, "The Rock12", "Disillusioned Brigadier General Francis Hummel and his " +
                 "second-in-command Major Tom Baxter lead a rogue group of U.S. Force Recon Marines against a heavily " +
                 "guarded naval weapons depot to steal a stockp",
-                LocalDate.of(1994, 6, 7), 134);
+                LocalDate.of(1994, 6, 7), 134, new Mpa(1));
         film9 = new Film(1, "The Rock3", "Disillusioned Brigadier General Francis Hummel and his " +
                 "second-in-command Major Tom Baxter lead a rogue group of U.S. Force Recon Marines against a heavily " +
                 "guarded naval weapons depot to steal a stock",
-                LocalDate.of(1993, 6, 7), 137);
+                LocalDate.of(1993, 6, 7), 137, new Mpa(1));
         film10 = new Film(1, "The Rock1", "Disillusioned Brigadier General Francis Hummel and his " +
                 "second-in-command Major Tom Baxter lead a rogue group of U.S. Force Recon Marines against a heavily " +
                 "guarded naval weapons depot to steal a stock",
-                LocalDate.of(1995, 6, 7), 135);
+                LocalDate.of(1995, 6, 7), 135, new Mpa(1));
     }
 
     @Test

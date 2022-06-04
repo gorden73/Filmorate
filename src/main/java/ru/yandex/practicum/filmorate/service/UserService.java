@@ -74,66 +74,69 @@ public class UserService {
     }
 
     public User addToFriends(Integer id, Integer friendId) {
-        Map<Integer, User> userMap = userStorage.allUsers();
-        if (!userStorage.allUsers().containsKey(id)) {
-            throw new ElementNotFoundException("пользователь" + id);
+        Map<Integer, User> users = userStorage.allUsers();
+        if (!users.containsKey(id)) {
+            throw new ElementNotFoundException("пользователь " + id);
         }
-        if (!userStorage.allUsers().containsKey(friendId)) {
-            throw new ElementNotFoundException("пользователь" + friendId);
+        if (!users.containsKey(friendId)) {
+            throw new ElementNotFoundException("пользователь " + friendId);
         }
-        userMap.get(id).getFriends().add(friendId);
-        userMap.get(friendId).getFriends().add(id);
-        return friendDao.addToFriends(id, friendId); // нужно использовать FriendDao
+        users.get(id).getFriends().add(friendId);
+        users.get(friendId).getFriends().add(id);
+        return friendDao.addToFriends(id, friendId);
     }
 
     public Integer removeFromFriends(Integer id, Integer removeFromId) {
-        Map<Integer, User> userMap = userStorage.allUsers();
-        if (!userStorage.allUsers().containsKey(id)) {
-            throw new ElementNotFoundException("пользователь" + id);
+        Map<Integer, User> users = userStorage.allUsers();
+        if (!users.containsKey(id)) {
+            throw new ElementNotFoundException("пользователь " + id);
         }
-        if (!userStorage.allUsers().containsKey(removeFromId)) {
-            throw new ElementNotFoundException("пользователь" + removeFromId);
+        if (!users.containsKey(removeFromId)) {
+            throw new ElementNotFoundException("пользователь " + removeFromId);
         }
-        userMap.get(id).getFriends().remove(removeFromId);
-        userMap.get(removeFromId).getFriends().remove(id);
+        users.get(id).getFriends().remove(removeFromId);
+        users.get(removeFromId).getFriends().remove(id);
         return friendDao.removeFromFriends(id, removeFromId);
     }
 
     public Collection<User> getUserFriends(Integer id) {
         List<User> friends = new ArrayList<>();
-        if (!userStorage.allUsers().containsKey(id)) {
+        Map<Integer, User> users = userStorage.allUsers();
+        if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
-        Set<Integer> userSet = userStorage.allUsers().get(id).getFriends();
+        Set<Integer> userSet = users.get(id).getFriends();
         for (Integer user : userSet) {
-            friends.add(userStorage.allUsers().get(user));
+            friends.add(users.get(user));
         }
         return friends;
     }
 
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
         List<User> friendsNames = new ArrayList<>();
-        if (!userStorage.allUsers().containsKey(id)) {
+        Map<Integer, User> users = userStorage.allUsers();
+        if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
-        if (!userStorage.allUsers().containsKey(id1)) {
+        if (!users.containsKey(id1)) {
             throw new ElementNotFoundException("пользователь " + id1);
         }
-        Set<Integer> userSet = userStorage.allUsers().get(id).getFriends();
-        Set<Integer> userSet1 = userStorage.allUsers().get(id1).getFriends();
+        Set<Integer> userSet = users.get(id).getFriends();
+        Set<Integer> userSet1 = users.get(id1).getFriends();
         for (Integer user : userSet) {
             if (userSet1.contains(user)) {
-                friendsNames.add(userStorage.allUsers().get(user));
+                friendsNames.add(users.get(user));
             }
         }
         return friendsNames;
     }
 
     public User getUser(Integer id) {
-        if (!userStorage.allUsers().containsKey(id)) {
+        Map<Integer, User> users = userStorage.allUsers();
+        if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
-        return userStorage.allUsers().get(id);
+        return users.get(id);
     }
 
     public Integer remove(Integer id) {
