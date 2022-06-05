@@ -84,6 +84,14 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE film_id = ?";
         jdbcTemplate.update(sqlUpdateFilm, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
                 film.getMpa().getId(), film.getId());
+        if (film.getGenres() != null || !film.getGenres().isEmpty()) {
+            String sqlDeleteGenre = "DELETE FROM film_genre WHERE film_id = ?";
+            jdbcTemplate.update(sqlDeleteGenre, film.getId());
+            String sqlUpdateGenre = "INSERT INTO film_genre(film_id, genre_id) VALUES(?, ?)";
+            for (Integer genre : film.getGenres()) {
+                jdbcTemplate.update(sqlUpdateGenre, film.getId(),genre);
+            }
+        }
         log.debug("Обновлен фильм {}.", film.getId());
         return film;
     }
@@ -92,6 +100,8 @@ public class FilmDbStorage implements FilmStorage {
     public Integer remove(Integer id) {
         String sqlDeleteFilm = "DELETE FROM films WHERE film_id = ?";
         jdbcTemplate.update(sqlDeleteFilm, id);
+        String sqlDeleteGenre = "DELETE FROM film_genre WHERE film_id = ?";
+        jdbcTemplate.update(sqlDeleteGenre, id);
         log.debug("Удален фильм {}", id);
         return id;
     }

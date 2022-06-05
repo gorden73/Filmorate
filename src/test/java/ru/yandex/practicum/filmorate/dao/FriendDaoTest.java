@@ -37,6 +37,17 @@ class FriendDaoTest {
         userDbStorage.add(user);
         friendDao.addToFriends(1, 2);
         assertThat(userService.getUserFriends(1)).contains(user);
+        assertThat(userDbStorage.allUsers().get(1).getFriendStatus().get(2)).isEqualTo(false);
+    }
+
+    @Test
+    void shouldAddToFriendsAcceptedFriendship() {
+        userDbStorage.add(user);
+        friendDao.addToFriends(1, 2);
+        friendDao.addToFriends(2, 1);
+        assertThat(userService.getUserFriends(1)).contains(userDbStorage.allUsers().get(2));
+        assertThat(userService.getUserFriends(2)).contains(userDbStorage.allUsers().get(1));
+        assertThat(userDbStorage.allUsers().get(1).getFriendStatus().get(2)).isEqualTo(true);
     }
 
     @Test

@@ -84,4 +84,16 @@ public class Film {
         this.likes = new HashSet<>();
         this.genres = genres;
     }
+
+    public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
+                List<Integer> genres) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.likes = new HashSet<>();
+        this.genres = genres;
+    }
 }
