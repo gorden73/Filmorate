@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -24,17 +23,13 @@ class UserDbStorageTest {
     private User user;
 
     @BeforeEach
-    public void start() {
-        createUsersForTests();
-    }
-
-    private void createUsersForTests() {
+    public void createUserForTests() {
         user = new User("salvador@mail.ru", "chico", "Poco",
                 LocalDate.of(1990, 10, 6));
     }
 
     @Test
-    void shouldReturnUsersWhenDbHasUsers() {
+    void shouldReturnUserWhenDbHasUser() {
         Map<Integer, User> users = userDbStorage.allUsers();
         assertThat(users).hasSize(1);
         User testUser = users.get(1);
@@ -57,8 +52,8 @@ class UserDbStorageTest {
 
     @Test
     void shouldUpdateUser() {
-        User updateUser = new User( 1,"updateEmail", "updateLogin", "updateName",
-                LocalDate.of(2000,01,01));
+        User updateUser = new User(1, "updateEmail", "updateLogin", "updateName",
+                LocalDate.of(2000, 01, 01));
         userDbStorage.update(updateUser);
         User returnedUser = userDbStorage.allUsers().get(1);
         assertThat(returnedUser).isEqualTo(updateUser);

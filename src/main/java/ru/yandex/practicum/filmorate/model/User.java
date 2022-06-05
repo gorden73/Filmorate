@@ -30,6 +30,7 @@ public class User {
     public User() {
         super();
     }
+
     public User(Integer id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;

@@ -29,6 +29,7 @@ public class Film {
     public Film() {
         super();
     }
+
     public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
         this.id = id;
         this.name = name;
@@ -69,6 +70,18 @@ public class Film {
         this.duration = duration;
         this.mpa = mpa;
         this.likes = likes;
+        this.genres = genres;
+    }
+
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
+                List<Integer> genres) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.likes = new HashSet<>();
         this.genres = genres;
     }
 }

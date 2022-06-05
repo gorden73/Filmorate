@@ -59,12 +59,21 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sqlAddFilm, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId());
         log.debug("Добавлен новый фильм {}.", film);
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select film_id from films where name = ? and description = ?" +
-                        "and release_date = ? and duration = ? and mpa = ?", film.getName(), film.getDescription(),
-                film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select film_id from films where name = ? and " +
+                        "description = ? and release_date = ? and duration = ? and mpa = ?", film.getName(),
+                film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         if (filmRows.next()) {
-            return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                    film.getReleaseDate(), film.getDuration(), film.getMpa());
+            if (film.getGenres() == null) {
+                return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
+                        film.getReleaseDate(), film.getDuration(), film.getMpa());
+            } else {
+                String sqlAddGenre = "INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)";
+                for (Integer genre : film.getGenres()) {
+                    jdbcTemplate.update(sqlAddGenre, filmRows.getInt("film_id"), genre);
+                }
+                return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
+                        film.getReleaseDate(), film.getDuration(), film.getMpa(), film.getGenres());
+            }
         }
         return film;
     }
