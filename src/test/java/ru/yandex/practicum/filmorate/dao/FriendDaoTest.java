@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,11 +62,19 @@ class FriendDaoTest {
 
     @Test
     void shouldReturnUserFriends() {
-
+        userDbStorage.add(user);
+        friendDao.addToFriends(1, 2);
+        assertThat(friendDao.getUserFriends(1)).isEqualTo(List.of(user));
     }
 
     @Test
     void shouldReturnMutualFriends() {
-
+        User common = new User(3, "common@mail.ru", "common", "common",
+                LocalDate.of(1980, 10, 6), new HashSet<>(), new HashMap<>(), new HashSet<>());
+        userDbStorage.add(user);
+        userDbStorage.add(common);
+        friendDao.addToFriends(1, 3);
+        friendDao.addToFriends(2, 3);
+        assertThat(friendDao.getMutualFriends(1, 2)).isEqualTo(List.of(common));
     }
 }

@@ -45,8 +45,8 @@ class LikesDaoTest {
         Film film = new Film(2,"The Rock1", "Starring Nicolas Cage and Sean Connery1",
                 LocalDate.of(1995, 6, 7), 137, new Mpa(2), new ArrayList<>());
         filmDbStorage.add(film);
-        filmDbStorage.addLike(2, 1);
-        assertThat(filmDbStorage.getPopularFilms(2)).isEqualTo(List.of(new Film(2,"The Rock1",
+        likesDao.addLike(2, 1);
+        assertThat(likesDao.getPopularFilms(2)).isEqualTo(List.of(new Film(2,"The Rock1",
                 "Starring Nicolas Cage and Sean Connery1", LocalDate.of(1995, 6, 7),
                 137, new Mpa(2), new HashSet<>(List.of(1)), new ArrayList<>()), new Film(1,"The Rock",
                 "Starring Nicolas Cage and Sean Connery", LocalDate.of(1996, 6, 7),

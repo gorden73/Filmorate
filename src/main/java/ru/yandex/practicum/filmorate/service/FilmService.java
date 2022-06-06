@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.LikesDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -14,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j

@@ -116,4 +116,11 @@ class FilmDbStorageTest {
         filmDbStorage.remove(1);
         assertThat(filmDbStorage.allFilms()).isEmpty();
     }
+
+    @Test
+    void shouldReturnFilmById() {
+        assertThat(filmDbStorage.getFilm(1)).isEqualTo(new Film(1, "The Rock",
+                "Starring Nicolas Cage and Sean Connery", LocalDate.of(1996, 6, 7),
+                136, new Mpa(1), new HashSet<>(), new ArrayList<>()));
+    }
 }

@@ -6,14 +6,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 @Repository
 @Slf4j
@@ -72,12 +73,22 @@ public class FriendDao {
     }
 
     public Collection<User> getUserFriends(Integer id) {
-        String sqlGetUserFriends = "SELECT friend_id FROM friends WHERE user_id = ?";
+        String sqlGetUserFriends = "SELECT f.friend_id, u.user_id, u.email, u.login, u.name, u.birthday " +
+                "FROM friends AS f " +
+                "INNER JOIN users AS u ON f.friend_id = u.user_id " +
+                "WHERE f.user_id = ? " +
+                "GROUP BY f.friend_id";
         return jdbcTemplate.query(sqlGetUserFriends, (rs, rowNum) -> makeUser(rs), id);
     }
 
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
-        String sqlGetUserFriends = "SELECT friend_id FROM friends WHERE user_id = ? AND user_id = ? GROUP BY friend_id";
+        String sqlGetUserFriends = "SELECT f.friend_id, u.user_id, u.email, u.login, u.name, u.birthday " +
+                "FROM friends AS f " +
+                "LEFT JOIN friends AS fr ON f.friend_id = fr.friend_id " +
+                "INNER JOIN users AS u ON f.friend_id = u.user_id " +
+                "WHERE f.user_id = ? " +
+                "AND fr.user_id = ? " +
+                "GROUP BY f.friend_id";
         return jdbcTemplate.query(sqlGetUserFriends, (rs, rowNum) -> makeUser(rs), id, id1);
     }
 

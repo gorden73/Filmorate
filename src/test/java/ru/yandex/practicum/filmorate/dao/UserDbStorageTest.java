@@ -66,4 +66,10 @@ class UserDbStorageTest {
         userDbStorage.remove(1);
         assertThat(userDbStorage.allUsers()).isEmpty();
     }
+
+    @Test
+    void shouldReturnUserById() {
+        assertThat(userDbStorage.getUser(1)).isEqualTo(new User(1,"mail", "login", "name",
+                LocalDate.of(1990, 03, 8)));
+    }
 }
