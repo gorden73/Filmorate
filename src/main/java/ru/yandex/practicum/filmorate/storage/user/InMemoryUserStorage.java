@@ -7,8 +7,7 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -47,5 +46,42 @@ public class InMemoryUserStorage implements UserStorage {
         users.remove(id);
         log.debug("Удален пользователь {}", id);
         return id;
+    }
+
+    public User addToFriends(Integer id, Integer friendId) {
+        users.get(id).getFriends().add(friendId);
+        users.get(friendId).getFriends().add(id);
+        return users.get(friendId);
+    }
+
+    public Integer removeFromFriends(Integer id, Integer removeFromId) {
+        users.get(id).getFriends().remove(removeFromId);
+        users.get(removeFromId).getFriends().remove(id);
+        return id;
+    }
+
+    public Collection<User> getUserFriends(Integer id) {
+        List<User> friends = new ArrayList<>();
+        Set<Integer> userSet = users.get(id).getFriends();
+        for (Integer user : userSet) {
+            friends.add(users.get(user));
+        }
+        return friends;
+    }
+
+    public Collection<User> getMutualFriends(Integer id, Integer id1) {
+        List<User> friendsNames = new ArrayList<>();
+        Set<Integer> userSet = users.get(id).getFriends();
+        Set<Integer> userSet1 = users.get(id1).getFriends();
+        for (Integer user : userSet) {
+            if (userSet1.contains(user)) {
+                friendsNames.add(users.get(user));
+            }
+        }
+        return friendsNames;
+    }
+
+    public User getUser(Integer id) {
+        return users.get(id);
     }
 }

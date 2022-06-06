@@ -18,11 +18,12 @@ import java.util.*;
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-
+    private final LikesDao likesDao;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.likesDao = likesDao;
     }
 
     @Override
@@ -65,7 +66,7 @@ public class FilmDbStorage implements FilmStorage {
         if (filmRows.next()) {
             if (film.getGenres() == null) {
                 return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                        film.getReleaseDate(), film.getDuration(), film.getMpa());
+                        film.getReleaseDate(), film.getDuration(), film.getMpa(), new HashSet<>(), new ArrayList<>());
             } else {
                 String sqlAddGenre = "INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)";
                 for (Integer genre : film.getGenres()) {
@@ -84,15 +85,18 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE film_id = ?";
         jdbcTemplate.update(sqlUpdateFilm, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
                 film.getMpa().getId(), film.getId());
-        if (film.getGenres() != null || !film.getGenres().isEmpty()) {
+        log.debug("Обновлен фильм {}.", film.getId());
+        if (film.getGenres() == null) {
+            return film;
+        }
+        if (!film.getGenres().isEmpty()) {
             String sqlDeleteGenre = "DELETE FROM film_genre WHERE film_id = ?";
             jdbcTemplate.update(sqlDeleteGenre, film.getId());
             String sqlUpdateGenre = "INSERT INTO film_genre(film_id, genre_id) VALUES(?, ?)";
             for (Integer genre : film.getGenres()) {
-                jdbcTemplate.update(sqlUpdateGenre, film.getId(),genre);
+                jdbcTemplate.update(sqlUpdateGenre, film.getId(), genre);
             }
         }
-        log.debug("Обновлен фильм {}.", film.getId());
         return film;
     }
 
@@ -104,5 +108,30 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sqlDeleteGenre, id);
         log.debug("Удален фильм {}", id);
         return id;
+    }
+
+    @Override
+    public Film getFilm(Integer id) {
+        String sqlGetFilm = "SELECT * " +
+                "FROM films AS f " +
+                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "WHERE f.film_id = ? " +
+                "GROUP BY f.film_id";
+        return jdbcTemplate.query(sqlGetFilm, (rs, rowNum) -> makeFilm(rs), id).get(0);
+    }
+
+    @Override
+    public Collection<Film> getPopularFilms(Integer count) {
+        return likesDao.getPopularFilms(count);
+    }
+
+    @Override
+    public Integer addLike(Integer filmId, Integer userId) {
+        return likesDao.addLike(filmId, userId);
+    }
+
+    @Override
+    public Integer removeLike(Integer filmId, Integer userId) {
+        return likesDao.addLike(filmId, userId);
     }
 }

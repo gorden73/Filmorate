@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -11,19 +12,18 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final FriendDao friendDao;
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendDao friendDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.friendDao = friendDao;
     }
 
     @Override
@@ -89,5 +89,26 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sqlDeleteUser, id);
         log.debug("Удален пользователь {}", id);
         return id;
+    }
+
+    public User addToFriends(Integer id, Integer friendId) {
+        return friendDao.addToFriends(id, friendId);
+    }
+
+    public Integer removeFromFriends(Integer id, Integer removeFromId) {
+        return friendDao.removeFromFriends(id, removeFromId);
+    }
+
+    public Collection<User> getUserFriends(Integer id) {
+        return friendDao.getUserFriends(id);
+    }
+
+    public Collection<User> getMutualFriends(Integer id, Integer id1) {
+        return friendDao.getMutualFriends(id, id1);
+    }
+
+    public User getUser(Integer id) {
+        String sqlGetUser = "SELECT * FROM users WHERE user_id = ?";
+        return jdbcTemplate.query(sqlGetUser, (rs, rowNum) -> makeUser(rs), id).get(0);
     }
 }

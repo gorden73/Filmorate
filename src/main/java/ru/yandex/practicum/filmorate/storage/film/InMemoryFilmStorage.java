@@ -7,8 +7,10 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -47,5 +49,33 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.remove(id);
         log.debug("Удален фильм {}.", id);
         return id;
+    }
+
+    public Film getFilm(Integer id) {
+        if (!films.containsKey(id)) {
+            throw new ElementNotFoundException("фильм" + id);
+        }
+        return films.get(id);
+    }
+
+    public Collection<Film> getPopularFilms(Integer count) {
+        if (count > 0 && count < films.size()) {
+            return films.values().stream()
+                    .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
+                    .limit(count).collect(Collectors.toList());
+        }
+        return films.values().stream()
+                .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
+                .limit(films.size()).collect(Collectors.toList());
+    }
+
+    public Integer addLike(Integer filmId, Integer userId) {
+        films.get(filmId).getLikes().add(userId);
+        return userId;
+    }
+
+    public Integer removeLike(Integer filmId, Integer userId) {
+        films.get(filmId).getLikes().remove(userId);
+        return userId;
     }
 }

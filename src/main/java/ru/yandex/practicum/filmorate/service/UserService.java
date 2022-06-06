@@ -18,12 +18,10 @@ import java.util.*;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
-    private final FriendDao friendDao;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendDao friendDao) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
-        this.friendDao = friendDao;
     }
 
     private boolean checkValidData(User user) {
@@ -81,9 +79,7 @@ public class UserService {
         if (!users.containsKey(friendId)) {
             throw new ElementNotFoundException("пользователь " + friendId);
         }
-        users.get(id).getFriends().add(friendId);
-        users.get(friendId).getFriends().add(id);
-        return friendDao.addToFriends(id, friendId);
+        return userStorage.addToFriends(id, friendId);
     }
 
     public Integer removeFromFriends(Integer id, Integer removeFromId) {
@@ -94,26 +90,18 @@ public class UserService {
         if (!users.containsKey(removeFromId)) {
             throw new ElementNotFoundException("пользователь " + removeFromId);
         }
-        users.get(id).getFriends().remove(removeFromId);
-        users.get(removeFromId).getFriends().remove(id);
-        return friendDao.removeFromFriends(id, removeFromId);
+        return userStorage.removeFromFriends(id, removeFromId);
     }
 
     public Collection<User> getUserFriends(Integer id) {
-        List<User> friends = new ArrayList<>();
         Map<Integer, User> users = userStorage.allUsers();
         if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
-        Set<Integer> userSet = users.get(id).getFriends();
-        for (Integer user : userSet) {
-            friends.add(users.get(user));
-        }
-        return friends;
+        return userStorage.getUserFriends(id);
     }
 
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
-        List<User> friendsNames = new ArrayList<>();
         Map<Integer, User> users = userStorage.allUsers();
         if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
@@ -121,14 +109,7 @@ public class UserService {
         if (!users.containsKey(id1)) {
             throw new ElementNotFoundException("пользователь " + id1);
         }
-        Set<Integer> userSet = users.get(id).getFriends();
-        Set<Integer> userSet1 = users.get(id1).getFriends();
-        for (Integer user : userSet) {
-            if (userSet1.contains(user)) {
-                friendsNames.add(users.get(user));
-            }
-        }
-        return friendsNames;
+        return userStorage.getMutualFriends(id, id1);
     }
 
     public User getUser(Integer id) {
@@ -136,7 +117,7 @@ public class UserService {
         if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
-        return users.get(id);
+        return userStorage.getUser(id);
     }
 
     public Integer remove(Integer id) {

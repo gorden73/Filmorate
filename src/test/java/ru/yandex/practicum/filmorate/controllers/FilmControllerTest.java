@@ -36,7 +36,7 @@ class FilmControllerTest {
     void start() {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         LikesDao likesDao = new LikesDao(new JdbcTemplate());
-        controller = new FilmController(new FilmService(filmStorage, likesDao));
+        controller = new FilmController(new FilmService(filmStorage));
         createFilmsForTests();
     }
 

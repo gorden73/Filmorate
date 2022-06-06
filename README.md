@@ -39,5 +39,5 @@ Educational project on creating a service
    <br>SELECT film_id
    <br>FROM like
    <br>GROUP BY film_id
-   <br>ORDER BY COUNT(film_id) DESC
+   <br>ORDER BY COUNT(user_id) DESC
    <br>LIMIT N;

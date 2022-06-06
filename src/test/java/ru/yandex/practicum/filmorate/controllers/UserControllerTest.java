@@ -32,7 +32,7 @@ class UserControllerTest {
     public void start() {
         UserStorage userStorage = new InMemoryUserStorage();
         FriendDao friendDao = new FriendDao(new JdbcTemplate());
-        controller = new UserController(new UserService(userStorage, friendDao));
+        controller = new UserController(new UserService(userStorage));
         createUsersForTests();
     }
 

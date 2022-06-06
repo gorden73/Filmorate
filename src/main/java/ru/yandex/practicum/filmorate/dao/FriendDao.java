@@ -4,12 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.*;
 
 @Repository
 @Slf4j
@@ -65,5 +69,36 @@ public class FriendDao {
             return true;
         }
         return false;
+    }
+
+    public Collection<User> getUserFriends(Integer id) {
+        String sqlGetUserFriends = "SELECT friend_id FROM friends WHERE user_id = ?";
+        return jdbcTemplate.query(sqlGetUserFriends, (rs, rowNum) -> makeUser(rs), id);
+    }
+
+    public Collection<User> getMutualFriends(Integer id, Integer id1) {
+        String sqlGetUserFriends = "SELECT friend_id FROM friends WHERE user_id = ? AND user_id = ? GROUP BY friend_id";
+        return jdbcTemplate.query(sqlGetUserFriends, (rs, rowNum) -> makeUser(rs), id, id1);
+    }
+
+    private User makeUser(ResultSet rs) throws SQLException {
+        int id = rs.getInt("user_id");
+        String email = rs.getString("email");
+        String login = rs.getString("login");
+        String name = rs.getString("name");
+        LocalDate birthday = rs.getDate("birthday").toLocalDate();
+        String sqlFriends = "SELECT friend_id FROM friends WHERE user_id = ?";
+        HashSet<Integer> friends = new HashSet<>(jdbcTemplate.query(sqlFriends,
+                (rs1, rowNum) -> (rs1.getInt("friend_id")), id));
+        HashMap<Integer, Boolean> friendStatus = new HashMap<>();
+        String sqlFriendStatus = "SELECT * FROM friends WHERE user_id = ?";
+        SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(sqlFriendStatus, id);
+        if (friendsRows.next()) {
+            friendStatus.put(friendsRows.getInt("friend_id"), friendsRows.getBoolean("status"));
+        }
+        String sqlLikedFilms = "SELECT film_id FROM likes WHERE user_id = ?";
+        HashSet<Integer> likedFilms = new HashSet<>(jdbcTemplate.query(sqlLikedFilms,
+                (rs3, rowNum) -> (rs3.getInt("film_id")), id));
+        return new User(id, email, login, name, birthday, friends, friendStatus, likedFilms);
     }
 }

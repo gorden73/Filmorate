@@ -58,4 +58,14 @@ class FriendDaoTest {
         friendDao.removeFromFriends(1, 2);
         assertThat(userService.getUserFriends(1)).isEmpty();
     }
+
+    @Test
+    void shouldReturnUserFriends() {
+
+    }
+
+    @Test
+    void shouldReturnMutualFriends() {
+
+    }
 }
