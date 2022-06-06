@@ -20,6 +20,20 @@ import java.util.List;
 @Slf4j
 public class FriendDao {
     private final JdbcTemplate jdbcTemplate;
+    private static final String SQL_ADD_TO_FRIENDS = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
+    private static final String SQL_CHANGE_STATUS = "UPDATE friends SET status = ? WHERE user_id = ? AND friend_id = ?";
+    private static final String SQL_GET_USER_BY_ID = "SELECT * FROM users WHERE user_id = ?";
+    private static final String SQL_REMOVE_LIKE = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
+    private static final String SQL_CHECK_FRIEND = "SELECT friend_id FROM friends WHERE user_id = ? AND friend_id = ?";
+    private static final String SQL_GET_USER_FRIENDS = "SELECT f.friend_id, u.user_id, u.email, u.login, u.name, " +
+            "u.birthday FROM friends AS f INNER JOIN users AS u ON f.friend_id = u.user_id  WHERE f.user_id = ? " +
+            "GROUP BY f.friend_id";
+    private static final String SQL_GET_MUTUAL_FRIENDS = "SELECT f.friend_id, u.user_id, u.email, u.login, u.name, " +
+            "u.birthday FROM friends AS f LEFT JOIN friends AS fr ON f.friend_id = fr.friend_id INNER JOIN users AS u " +
+            "ON f.friend_id = u.user_id WHERE f.user_id = ? AND fr.user_id = ? GROUP BY f.friend_id";
+    private static final String SQL_GET_FRIENDS = "SELECT friend_id FROM friends WHERE user_id = ?";
+    private static final String SQL_GET_FRIENDS_STATUS = "SELECT * FROM friends WHERE user_id = ?";
+    private static final String SQL_GET_LIKED_FILMS = "SELECT film_id FROM likes WHERE user_id = ?";
 
     @Autowired
     public FriendDao(JdbcTemplate jdbcTemplate) {
@@ -27,15 +41,12 @@ public class FriendDao {
     }
 
     public User addToFriends(Integer id, Integer friendId) {
-        String sqlAddToFriends = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
-        jdbcTemplate.update(sqlAddToFriends, id, friendId);
+        jdbcTemplate.update(SQL_ADD_TO_FRIENDS, id, friendId);
         if (checkFriend(id, friendId)) {
-            String sqlChangeStatus1 = "UPDATE friends SET status = ? WHERE user_id = ? AND friend_id = ?";
-            jdbcTemplate.update(sqlChangeStatus1, true, id, friendId);
-            String sqlChangeStatus2 = "UPDATE friends SET status = ? WHERE user_id = ? AND friend_id = ?";
-            jdbcTemplate.update(sqlChangeStatus2, true, friendId, id);
+            jdbcTemplate.update(SQL_CHANGE_STATUS, true, id, friendId);
+            jdbcTemplate.update(SQL_CHANGE_STATUS, true, friendId, id);
         }
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from users where user_id = ?", friendId);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(SQL_GET_USER_BY_ID, friendId);
         if (userRows.next()) {
             log.debug("Пользователь {} отправил заявку в друзья пользователю {}.", id, friendId);
             return new User(userRows.getInt("user_id"), userRows.getString("email"),
@@ -52,19 +63,16 @@ public class FriendDao {
         if (!checkFriend(friendId, id)) {
             throw new ElementNotFoundException("пользователь " + friendId);
         }
-        String sqlRemoveLike = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sqlRemoveLike, id, friendId);
+        jdbcTemplate.update(SQL_REMOVE_LIKE, id, friendId);
         if (checkFriend(id, friendId)) {
-            String sqlChangeStatus = "UPDATE friends SET status = ? WHERE user_id = ? AND friend_id = ?";
-            jdbcTemplate.update(sqlChangeStatus, false, friendId, id);
+            jdbcTemplate.update(SQL_CHANGE_STATUS, false, friendId, id);
         }
         log.debug("Пользователь {} удалил из друзей пользователя {}.", id, friendId);
         return friendId;
     }
 
     private boolean checkFriend(Integer id, Integer friendId) {
-        String sqlCheckFriend = "SELECT friend_id FROM friends WHERE user_id = ? AND friend_id = ?";
-        List<Integer> friends = jdbcTemplate.query(sqlCheckFriend, (rs, rowNum) -> rs.getInt("friend_id"),
+        List<Integer> friends = jdbcTemplate.query(SQL_CHECK_FRIEND, (rs, rowNum) -> rs.getInt("friend_id"),
                 friendId, id);
         if (friends.contains(id)) {
             return true;
@@ -73,23 +81,11 @@ public class FriendDao {
     }
 
     public Collection<User> getUserFriends(Integer id) {
-        String sqlGetUserFriends = "SELECT f.friend_id, u.user_id, u.email, u.login, u.name, u.birthday " +
-                "FROM friends AS f " +
-                "INNER JOIN users AS u ON f.friend_id = u.user_id " +
-                "WHERE f.user_id = ? " +
-                "GROUP BY f.friend_id";
-        return jdbcTemplate.query(sqlGetUserFriends, (rs, rowNum) -> makeUser(rs), id);
+        return jdbcTemplate.query(SQL_GET_USER_FRIENDS, (rs, rowNum) -> makeUser(rs), id);
     }
 
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
-        String sqlGetUserFriends = "SELECT f.friend_id, u.user_id, u.email, u.login, u.name, u.birthday " +
-                "FROM friends AS f " +
-                "LEFT JOIN friends AS fr ON f.friend_id = fr.friend_id " +
-                "INNER JOIN users AS u ON f.friend_id = u.user_id " +
-                "WHERE f.user_id = ? " +
-                "AND fr.user_id = ? " +
-                "GROUP BY f.friend_id";
-        return jdbcTemplate.query(sqlGetUserFriends, (rs, rowNum) -> makeUser(rs), id, id1);
+        return jdbcTemplate.query(SQL_GET_MUTUAL_FRIENDS, (rs, rowNum) -> makeUser(rs), id, id1);
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
@@ -98,17 +94,14 @@ public class FriendDao {
         String login = rs.getString("login");
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        String sqlFriends = "SELECT friend_id FROM friends WHERE user_id = ?";
-        HashSet<Integer> friends = new HashSet<>(jdbcTemplate.query(sqlFriends,
+        HashSet<Integer> friends = new HashSet<>(jdbcTemplate.query(SQL_GET_FRIENDS,
                 (rs1, rowNum) -> (rs1.getInt("friend_id")), id));
         HashMap<Integer, Boolean> friendStatus = new HashMap<>();
-        String sqlFriendStatus = "SELECT * FROM friends WHERE user_id = ?";
-        SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(sqlFriendStatus, id);
+        SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(SQL_GET_FRIENDS_STATUS, id);
         if (friendsRows.next()) {
             friendStatus.put(friendsRows.getInt("friend_id"), friendsRows.getBoolean("status"));
         }
-        String sqlLikedFilms = "SELECT film_id FROM likes WHERE user_id = ?";
-        HashSet<Integer> likedFilms = new HashSet<>(jdbcTemplate.query(sqlLikedFilms,
+        HashSet<Integer> likedFilms = new HashSet<>(jdbcTemplate.query(SQL_GET_LIKED_FILMS,
                 (rs3, rowNum) -> (rs3.getInt("film_id")), id));
         return new User(id, email, login, name, birthday, friends, friendStatus, likedFilms);
     }

@@ -30,7 +30,7 @@ class UserDbStorageTest {
 
     @Test
     void shouldReturnUserWhenDbHasUser() {
-        Map<Integer, User> users = userDbStorage.allUsers();
+        Map<Integer, User> users = userDbStorage.getAllUsers();
         assertThat(users).hasSize(1);
         User testUser = users.get(1);
         assertThat(testUser.getEmail()).isEqualTo("mail");
@@ -41,8 +41,8 @@ class UserDbStorageTest {
 
     @Test
     void shouldAddUser() {
-        userDbStorage.add(user);
-        Map<Integer, User> users = userDbStorage.allUsers();
+        userDbStorage.addUser(user);
+        Map<Integer, User> users = userDbStorage.getAllUsers();
         User testUser = users.get(2);
         assertThat(testUser.getEmail()).isEqualTo(user.getEmail());
         assertThat(testUser.getLogin()).isEqualTo(user.getLogin());
@@ -54,17 +54,17 @@ class UserDbStorageTest {
     void shouldUpdateUser() {
         User updateUser = new User(1, "updateEmail", "updateLogin", "updateName",
                 LocalDate.of(2000, 01, 01));
-        userDbStorage.update(updateUser);
-        User returnedUser = userDbStorage.allUsers().get(1);
+        userDbStorage.updateUser(updateUser);
+        User returnedUser = userDbStorage.getAllUsers().get(1);
         assertThat(returnedUser).isEqualTo(updateUser);
     }
 
     @Test
     void shouldRemoveUser() {
-        assertThat(userDbStorage.allUsers().get(1).getId()).isEqualTo(1);
-        assertThat(userDbStorage.allUsers()).hasSize(1);
-        userDbStorage.remove(1);
-        assertThat(userDbStorage.allUsers()).isEmpty();
+        assertThat(userDbStorage.getAllUsers().get(1).getId()).isEqualTo(1);
+        assertThat(userDbStorage.getAllUsers()).hasSize(1);
+        userDbStorage.removeUser(1);
+        assertThat(userDbStorage.getAllUsers()).isEmpty();
     }
 
     @Test

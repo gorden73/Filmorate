@@ -14,11 +14,11 @@ public class InMemoryUserStorage implements UserStorage {
     private int id = 1;
 
 
-    public Map<Integer, User> allUsers() {
+    public Map<Integer, User> getAllUsers() {
         return users;
     }
 
-    public User add(User user) {
+    public User addUser(User user) {
         user.setId(id);
         users.put(id, user);
         id++;
@@ -26,7 +26,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public User update(User user) {
+    public User updateUser(User user) {
         if (!users.containsKey(user.getId())) {
             throw new ElementNotFoundException("пользователь " + user.getId());
         }
@@ -40,7 +40,7 @@ public class InMemoryUserStorage implements UserStorage {
         return updateUser;
     }
 
-    public Integer remove(Integer id) {
+    public Integer removeUser(Integer id) {
         users.remove(id);
         log.debug("Удален пользователь {}", id);
         return id;

@@ -6,13 +6,13 @@ import java.util.Collection;
 import java.util.Map;
 
 public interface UserStorage {
-    Map<Integer, User> allUsers();
+    Map<Integer, User> getAllUsers();
 
-    User add(User user);
+    User addUser(User user);
 
-    User update(User user);
+    User updateUser(User user);
 
-    Integer remove(Integer id);
+    Integer removeUser(Integer id);
 
     User getUser(Integer id);
 

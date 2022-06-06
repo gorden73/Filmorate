@@ -37,7 +37,7 @@ class FilmDbStorageTest {
 
     @Test
     void shouldReturnAllFilmsWhenFilmHasNotGenres() {
-        Map<Integer, Film> films = filmDbStorage.allFilms();
+        Map<Integer, Film> films = filmDbStorage.getAllFilms();
         assertThat(films).hasSize(1);
         Film returnedFilm = films.get(1);
         assertThat(returnedFilm.getId()).isEqualTo(1);
@@ -50,8 +50,8 @@ class FilmDbStorageTest {
 
     @Test
     void shouldReturnAllFilmsWhenFilmHasGenres() {
-        filmDbStorage.add(film1);
-        Map<Integer, Film> films = filmDbStorage.allFilms();
+        filmDbStorage.addFilm(film1);
+        Map<Integer, Film> films = filmDbStorage.getAllFilms();
         assertThat(films).hasSize(2);
         Film returnedFilm = films.get(2);
         assertThat(returnedFilm.getId()).isEqualTo(2);
@@ -65,8 +65,8 @@ class FilmDbStorageTest {
 
     @Test
     void shouldAddFilmWhenFilmHasNotGenres() {
-        filmDbStorage.add(film);
-        Map<Integer, Film> films = filmDbStorage.allFilms();
+        filmDbStorage.addFilm(film);
+        Map<Integer, Film> films = filmDbStorage.getAllFilms();
         assertThat(films).hasSize(2);
         Film returnedFilm = films.get(2);
         assertThat(returnedFilm.getId()).isEqualTo(2);
@@ -79,8 +79,8 @@ class FilmDbStorageTest {
 
     @Test
     void shouldAddFilmWhenFilmHasGenres() {
-        filmDbStorage.add(film1);
-        Map<Integer, Film> films = filmDbStorage.allFilms();
+        filmDbStorage.addFilm(film1);
+        Map<Integer, Film> films = filmDbStorage.getAllFilms();
         assertThat(films).hasSize(2);
         Film returnedFilm = films.get(2);
         assertThat(returnedFilm.getId()).isEqualTo(2);
@@ -96,25 +96,25 @@ class FilmDbStorageTest {
     void shouldUpdateFilmWhenFilmHasNotGenres() {
         Film updateFilm = new Film(1, "updateName", "updateDescription", LocalDate.of(2000, 12, 12),
                 100, new Mpa(4), new HashSet<>(), new ArrayList<>());
-        filmDbStorage.update(updateFilm);
-        assertThat(updateFilm).isEqualTo(filmDbStorage.allFilms().get(1));
+        filmDbStorage.updateFilm(updateFilm);
+        assertThat(updateFilm).isEqualTo(filmDbStorage.getAllFilms().get(1));
     }
 
     @Test
     void shouldUpdateFilmWhenFilmHasGenres() {
-        filmDbStorage.add(film1);
+        filmDbStorage.addFilm(film1);
         Film updateFilm = new Film(2, "updateName", "updateDescription", LocalDate.of(2000, 12, 12),
                 100, new Mpa(4), new HashSet<>(), List.of(3,4));
-        filmDbStorage.update(updateFilm);
-        assertThat(updateFilm).isEqualTo(filmDbStorage.allFilms().get(2));
+        filmDbStorage.updateFilm(updateFilm);
+        assertThat(updateFilm).isEqualTo(filmDbStorage.getAllFilms().get(2));
     }
 
     @Test
     void shouldRemoveFilm() {
-        assertThat(filmDbStorage.allFilms().get(1).getId()).isEqualTo(1);
-        assertThat(filmDbStorage.allFilms()).hasSize(1);
-        filmDbStorage.remove(1);
-        assertThat(filmDbStorage.allFilms()).isEmpty();
+        assertThat(filmDbStorage.getAllFilms().get(1).getId()).isEqualTo(1);
+        assertThat(filmDbStorage.getAllFilms()).hasSize(1);
+        filmDbStorage.removeFilm(1);
+        assertThat(filmDbStorage.getAllFilms()).isEmpty();
     }
 
     @Test

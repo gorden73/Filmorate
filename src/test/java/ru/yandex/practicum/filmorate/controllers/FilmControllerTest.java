@@ -35,7 +35,6 @@ class FilmControllerTest {
     @BeforeEach
     void start() {
         FilmStorage filmStorage = new InMemoryFilmStorage();
-        LikesDao likesDao = new LikesDao(new JdbcTemplate());
         controller = new FilmController(new FilmService(filmStorage));
         createFilmsForTests();
     }
@@ -77,83 +76,83 @@ class FilmControllerTest {
 
     @Test
     void shouldReturnAllFilms() {
-        assertEquals(0, controller.allFilms().size(), "Хранилище должно быть пустым.");
-        controller.add(film);
-        Collection<Film> films = controller.allFilms();
+        assertEquals(0, controller.getAllFilms().size(), "Хранилище должно быть пустым.");
+        controller.addFilm(film);
+        Collection<Film> films = controller.getAllFilms();
         assertEquals(1, films.size(), "Хранилище не должно быть пустым.");
         assertTrue(films.contains(film), "Фильм не добавлен.");
     }
 
     @Test
     void shouldAddFilmWhenDataIsValid() {
-        controller.add(film);
-        assertTrue(controller.allFilms().contains(film), "Фильм не добавлен в хранилище.");
+        controller.addFilm(film);
+        assertTrue(controller.getAllFilms().contains(film), "Фильм не добавлен в хранилище.");
     }
 
     @Test
     void shouldNotAddFilmWhenNameIsEmpty() {
-        assertThrows(ValidationException.class, () -> controller.add(film1), "Название фильма не пустое.");
-        assertFalse(controller.allFilms().contains(film1), "Фильм добавлен в хранилище.");
+        assertThrows(ValidationException.class, () -> controller.addFilm(film1), "Название фильма не пустое.");
+        assertFalse(controller.getAllFilms().contains(film1), "Фильм добавлен в хранилище.");
     }
 
     @Test
     void shouldNotAddFilmWhenDescriptionIsOver200Symbols() {
-        assertThrows(ValidationException.class, () -> controller.add(film2), "Описание меньше 200.");
-        assertFalse(controller.allFilms().contains(film2), "Фильм добавлен в хранилище.");
+        assertThrows(ValidationException.class, () -> controller.addFilm(film2), "Описание меньше 200.");
+        assertFalse(controller.getAllFilms().contains(film2), "Фильм добавлен в хранилище.");
     }
 
     @Test
     void shouldAddFilmWhenDescriptionIsEquals200Symbols() {
-        controller.add(film8);
-        assertTrue(controller.allFilms().contains(film8), "Фильм не добавлен в хранилище.");
+        controller.addFilm(film8);
+        assertTrue(controller.getAllFilms().contains(film8), "Фильм не добавлен в хранилище.");
     }
 
     @Test
     void shouldAddFilmWhenDescriptionIsLess200Symbols() {
-        controller.add(film9);
-        assertTrue(controller.allFilms().contains(film9), "Фильм не добавлен в хранилище.");
+        controller.addFilm(film9);
+        assertTrue(controller.getAllFilms().contains(film9), "Фильм не добавлен в хранилище.");
     }
 
     @Test
     void shouldAddFilmWhenReleaseDateIsEqualsBirthdayOfMovie() {
-        controller.add(film6);
-        assertTrue(controller.allFilms().contains(film6), "Фильм не добавлен в хранилище.");
+        controller.addFilm(film6);
+        assertTrue(controller.getAllFilms().contains(film6), "Фильм не добавлен в хранилище.");
     }
 
     @Test
     void shouldAddFilmWhenReleaseDateIsAfterBirthdayOfMovie() {
-        controller.add(film7);
-        assertTrue(controller.allFilms().contains(film7), "Фильм не добавлен в хранилище.");
+        controller.addFilm(film7);
+        assertTrue(controller.getAllFilms().contains(film7), "Фильм не добавлен в хранилище.");
     }
 
     @Test
     void shouldNotAddFilmWhenReleaseDateIsBeforeBirthdayOfMovie() {
-        assertThrows(ValidationException.class, () -> controller.add(film3),
+        assertThrows(ValidationException.class, () -> controller.addFilm(film3),
                 "Дата выхода фильма позже 28.12.1895");
-        assertFalse(controller.allFilms().contains(film3), "Фильм добавлен в хранилище.");
+        assertFalse(controller.getAllFilms().contains(film3), "Фильм добавлен в хранилище.");
     }
 
     @Test
     void shouldNotAddFilmWhenDurationIsEqualsZero() {
-        assertThrows(ValidationException.class, () -> controller.add(film4),
+        assertThrows(ValidationException.class, () -> controller.addFilm(film4),
                 "Продолжительность фильма не равна 0.");
-        assertFalse(controller.allFilms().contains(film4), "Фильм добавлен в хранилище.");
+        assertFalse(controller.getAllFilms().contains(film4), "Фильм добавлен в хранилище.");
     }
 
     @Test
     void shouldNotAddFilmWhenDurationIsNegative() {
-        assertThrows(ValidationException.class, () -> controller.add(film5),
+        assertThrows(ValidationException.class, () -> controller.addFilm(film5),
                 "Продолжительность фильма положительная.");
-        assertFalse(controller.allFilms().contains(film5), "Фильм добавлен в хранилище.");
+        assertFalse(controller.getAllFilms().contains(film5), "Фильм добавлен в хранилище.");
     }
 
     @Test
     void shouldUpdateFilmWhenDataIsValid() {
-        controller.add(film);
-        assertEquals(1, controller.allFilms().size(), "Хранилище не должно быть пустым.");
-        assertTrue(controller.allFilms().contains(film), "Фильм не добавлен в хранилище.");
-        controller.update(film10);
-        assertEquals(1, controller.allFilms().size(), "Хранилище не должно быть пустым.");
+        controller.addFilm(film);
+        assertEquals(1, controller.getAllFilms().size(), "Хранилище не должно быть пустым.");
+        assertTrue(controller.getAllFilms().contains(film), "Фильм не добавлен в хранилище.");
+        controller.updateFilm(film10);
+        assertEquals(1, controller.getAllFilms().size(), "Хранилище не должно быть пустым.");
         assertEquals(film.getName(), film10.getName(), "Названия фильмов не совпадают.");
         assertEquals(film.getDescription(), film10.getDescription(), "Описания фильмов не совпадают.");
         assertEquals(film.getReleaseDate(), film10.getReleaseDate(), "Даты выхода фильмов не совпадают.");
@@ -162,25 +161,25 @@ class FilmControllerTest {
 
     @Test
     void shouldNotUpdateFilmWhenNameIsEmpty() {
-        controller.add(film);
-        assertThrows(ValidationException.class, () -> controller.update(film1),
+        controller.addFilm(film);
+        assertThrows(ValidationException.class, () -> controller.updateFilm(film1),
                 "Название фильма не пустое.");
     }
 
     @Test
     void shouldNotUpdateFilmWhenDescriptionIsOver200Symbols() {
-        controller.add(film);
-        assertThrows(ValidationException.class, () -> controller.update(film2), "Описание меньше 200 символов.");
+        controller.addFilm(film);
+        assertThrows(ValidationException.class, () -> controller.updateFilm(film2), "Описание меньше 200 символов.");
     }
 
     @Test
     void shouldUpdateFilmWhenDescriptionIsEquals200Symbols() {
-        controller.add(film);
+        controller.addFilm(film);
         assertNotEquals(film.getName(), film8.getName(), "Названия фильмов совпадают.");
         assertNotEquals(film.getDescription(), film8.getDescription(), "Описания фильмов совпадают.");
         assertNotEquals(film.getReleaseDate(), film8.getReleaseDate(), "Даты выхода фильмов совпадают.");
         assertNotEquals(film.getDuration(), film8.getDuration(), "Продолжительности фильмов совпадают.");
-        controller.update(film8);
+        controller.updateFilm(film8);
         assertEquals(film.getName(), film8.getName(), "Названия фильмов не совпадают.");
         assertEquals(film.getDescription(), film8.getDescription(), "Описания фильмов не совпадают.");
         assertEquals(film.getReleaseDate(), film8.getReleaseDate(), "Даты выхода фильмов не совпадают.");
@@ -189,12 +188,12 @@ class FilmControllerTest {
 
     @Test
     void shouldUpdateFilmWhenDescriptionIsLess200Symbols() {
-        controller.add(film);
+        controller.addFilm(film);
         assertNotEquals(film.getName(), film9.getName(), "Названия фильмов совпадают.");
         assertNotEquals(film.getDescription(), film9.getDescription(), "Описания фильмов совпадают.");
         assertNotEquals(film.getReleaseDate(), film9.getReleaseDate(), "Даты выхода фильмов совпадают.");
         assertNotEquals(film.getDuration(), film9.getDuration(), "Продолжительности фильмов совпадают.");
-        controller.update(film9);
+        controller.updateFilm(film9);
         assertEquals(film.getName(), film9.getName(), "Названия фильмов не совпадают.");
         assertEquals(film.getDescription(), film9.getDescription(), "Описания фильмов не совпадают.");
         assertEquals(film.getReleaseDate(), film9.getReleaseDate(), "Даты выхода фильмов не совпадают.");
@@ -203,12 +202,12 @@ class FilmControllerTest {
 
     @Test
     void shouldUpdateFilmWhenReleaseDateIsEqualsBirthdayOfMovie() {
-        controller.add(film);
+        controller.addFilm(film);
         assertNotEquals(film.getName(), film6.getName(), "Названия фильмов совпадают.");
         assertNotEquals(film.getDescription(), film6.getDescription(), "Описания фильмов совпадают.");
         assertNotEquals(film.getReleaseDate(), film6.getReleaseDate(), "Даты выхода фильмов совпадают.");
         assertNotEquals(film.getDuration(), film6.getDuration(), "Продолжительности фильмов совпадают.");
-        controller.update(film6);
+        controller.updateFilm(film6);
         assertEquals(film.getName(), film6.getName(), "Названия фильмов не совпадают.");
         assertEquals(film.getDescription(), film6.getDescription(), "Описания фильмов не совпадают.");
         assertEquals(film.getReleaseDate(), film6.getReleaseDate(), "Даты выхода фильмов не совпадают.");
@@ -217,12 +216,12 @@ class FilmControllerTest {
 
     @Test
     void shouldUpdateFilmWhenReleaseDateIsAfterBirthdayOfMovie() {
-        controller.add(film);
+        controller.addFilm(film);
         assertNotEquals(film.getName(), film7.getName(), "Названия фильмов совпадают.");
         assertNotEquals(film.getDescription(), film7.getDescription(), "Описания фильмов совпадают.");
         assertNotEquals(film.getReleaseDate(), film7.getReleaseDate(), "Даты выхода фильмов совпадают.");
         assertNotEquals(film.getDuration(), film7.getDuration(), "Продолжительности фильмов совпадают.");
-        controller.update(film7);
+        controller.updateFilm(film7);
         assertEquals(film.getName(), film7.getName(), "Названия фильмов не совпадают.");
         assertEquals(film.getDescription(), film7.getDescription(), "Описания фильмов не совпадают.");
         assertEquals(film.getReleaseDate(), film7.getReleaseDate(), "Даты выхода фильмов не совпадают.");
@@ -231,8 +230,8 @@ class FilmControllerTest {
 
     @Test
     void shouldNotUpdateFilmWhenReleaseDateIsBeforeBirthdayOfMovie() {
-        controller.add(film);
-        assertThrows(ValidationException.class, () -> controller.update(film3),
+        controller.addFilm(film);
+        assertThrows(ValidationException.class, () -> controller.updateFilm(film3),
                 "Дата выхода фильма позже 28.12.1895");
         assertNotEquals(film.getName(), film3.getName(), "Названия фильмов совпадают.");
         assertNotEquals(film.getDescription(), film3.getDescription(), "Описания фильмов совпадают.");
@@ -242,8 +241,8 @@ class FilmControllerTest {
 
     @Test
     void shouldNotUpdateFilmWhenDurationIsEqualsZero() {
-        controller.add(film);
-        assertThrows(ValidationException.class, () -> controller.update(film4),
+        controller.addFilm(film);
+        assertThrows(ValidationException.class, () -> controller.updateFilm(film4),
                 "Продолжительность фильма не равна 0.");
         assertNotEquals(film.getName(), film4.getName(), "Названия фильмов совпадают.");
         assertNotEquals(film.getDescription(), film4.getDescription(), "Описания фильмов совпадают.");
@@ -253,8 +252,8 @@ class FilmControllerTest {
 
     @Test
     void shouldNotUpdateFilmWhenDurationIsNegative() {
-        controller.add(film);
-        assertThrows(ValidationException.class, () -> controller.update(film5),
+        controller.addFilm(film);
+        assertThrows(ValidationException.class, () -> controller.updateFilm(film5),
                 "Продолжительность фильма положительная.");
         assertNotEquals(film.getName(), film5.getName(), "Названия фильмов совпадают.");
         assertNotEquals(film.getDescription(), film5.getDescription(), "Описания фильмов совпадают.");

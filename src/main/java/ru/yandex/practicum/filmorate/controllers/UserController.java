@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> allUsers() {
+    public Collection<User> getAllUsers() {
         return userService.allUsers().values();
     }
 
@@ -31,13 +31,18 @@ public class UserController {
     }
 
     @PostMapping
-    public User add(@Valid @RequestBody User user) {
+    public User addUser(@Valid @RequestBody User user) {
         return userService.add(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         return userService.update(user);
+    }
+
+    @DeleteMapping("/{id}")
+    public Integer removeUser(@PathVariable Integer id) {
+        return userService.remove(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
@@ -58,10 +63,5 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public Collection<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         return userService.getMutualFriends(id, otherId);
-    }
-
-    @DeleteMapping("/{id}")
-    public Integer removeUser(@PathVariable Integer id) {
-        return userService.remove(id);
     }
 }

@@ -17,11 +17,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int id = 1;
 
 
-    public Map<Integer, Film> allFilms() {
+    public Map<Integer, Film> getAllFilms() {
         return films;
     }
 
-    public Film add(Film film) {
+    public Film addFilm(Film film) {
         film.setId(id);
         films.put(id, film);
         id++;
@@ -29,7 +29,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-    public Film update(Film film) {
+    public Film updateFilm(Film film) {
         if (!films.containsKey(film.getId())) {
             throw new ElementNotFoundException("фильм " + film.getId());
         }
@@ -43,7 +43,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return updateFilm;
     }
 
-    public Integer remove(Integer id) {
+    public Integer removeFilm(Integer id) {
         films.remove(id);
         log.debug("Удален фильм {}.", id);
         return id;

@@ -18,7 +18,7 @@ import java.util.Map;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final LocalDate movieBirthday = LocalDate.of(1895, 12, 28);
+    private static final LocalDate MOVIE_BIRTHDAY = LocalDate.of(1895, 12, 28);
 
 
     @Autowired
@@ -35,7 +35,7 @@ public class FilmService {
             log.error("Описание пустое или состоит из пробелов.");
             throw new ValidationException("Описание не должно быть пустым или состоять из пробелов.");
         }
-        if (film.getReleaseDate().isBefore(movieBirthday)) {
+        if (film.getReleaseDate().isBefore(MOVIE_BIRTHDAY)) {
             log.error("Дата выхода фильма в прокат не может быть раньше 28.12.1895.", InMemoryFilmStorage.class);
             throw new ValidationException("Дата выхода фильма в прокат не может быть раньше 28.12.1895.");
         }
@@ -62,7 +62,7 @@ public class FilmService {
                 log.error("Не введен id.", InMemoryFilmStorage.class);
                 throw new ValidationException("Нужно задать id.");
             }
-            if (!allFilms().containsKey(film.getId())) {
+            if (!getAllFilms().containsKey(film.getId())) {
                 log.error("Неверный id.", InMemoryFilmStorage.class);
                 throw new ElementNotFoundException("фильм с id" + film.getId());
             }
@@ -70,30 +70,30 @@ public class FilmService {
         return true;
     }
 
-    public Map<Integer, Film> allFilms() {
-        return filmStorage.allFilms();
+    public Map<Integer, Film> getAllFilms() {
+        return filmStorage.getAllFilms();
     }
 
     public Film add(Film film) {
         if (checkAddValidData(film)) {
-            return filmStorage.add(film);
+            return filmStorage.addFilm(film);
         }
         return film;
     }
 
     public Film update(Film film) {
         if (checkUpdateValidData(film) && checkAddValidData(film)) {
-            return filmStorage.update(film);
+            return filmStorage.updateFilm(film);
         }
         return film;
     }
 
     public Integer remove(Integer id) {
-        return filmStorage.remove(id);
+        return filmStorage.removeFilm(id);
     }
 
     public Integer addLike(Integer filmId, Integer userId) {
-        Map<Integer, Film> films = filmStorage.allFilms();
+        Map<Integer, Film> films = filmStorage.getAllFilms();
         if (!films.containsKey(filmId)) {
             throw new ElementNotFoundException("фильм " + filmId);
         }
@@ -101,7 +101,7 @@ public class FilmService {
     }
 
     public Integer removeLike(Integer filmId, Integer userId) {
-        Map<Integer, Film> films = filmStorage.allFilms();
+        Map<Integer, Film> films = filmStorage.getAllFilms();
         if (!films.containsKey(filmId)) {
             throw new ElementNotFoundException("фильм " + filmId);
         }
@@ -117,7 +117,7 @@ public class FilmService {
     }
 
     public Film getFilm(Integer id) {
-        Map<Integer, Film> films = filmStorage.allFilms();
+        Map<Integer, Film> films = filmStorage.getAllFilms();
         if (!films.containsKey(id)) {
             throw new ElementNotFoundException("фильм " + id);
         }

@@ -54,25 +54,25 @@ public class UserService {
     }
 
     public Map<Integer, User> allUsers() {
-        return userStorage.allUsers();
+        return userStorage.getAllUsers();
     }
 
     public User add(User user) {
         if (checkValidData(user)) {
-            return userStorage.add(user);
+            return userStorage.addUser(user);
         }
         return user;
     }
 
     public User update(User user) {
         if (checkUpdateValidData(user)) {
-            return userStorage.update(user);
+            return userStorage.updateUser(user);
         }
         return user;
     }
 
     public User addToFriends(Integer id, Integer friendId) {
-        Map<Integer, User> users = userStorage.allUsers();
+        Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
@@ -83,7 +83,7 @@ public class UserService {
     }
 
     public Integer removeFromFriends(Integer id, Integer removeFromId) {
-        Map<Integer, User> users = userStorage.allUsers();
+        Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
@@ -94,7 +94,7 @@ public class UserService {
     }
 
     public Collection<User> getUserFriends(Integer id) {
-        Map<Integer, User> users = userStorage.allUsers();
+        Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
@@ -102,7 +102,7 @@ public class UserService {
     }
 
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
-        Map<Integer, User> users = userStorage.allUsers();
+        Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
@@ -113,7 +113,7 @@ public class UserService {
     }
 
     public User getUser(Integer id) {
-        Map<Integer, User> users = userStorage.allUsers();
+        Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
             throw new ElementNotFoundException("пользователь " + id);
         }
@@ -121,6 +121,6 @@ public class UserService {
     }
 
     public Integer remove(Integer id) {
-        return userStorage.remove(id);
+        return userStorage.removeUser(id);
     }
 }
