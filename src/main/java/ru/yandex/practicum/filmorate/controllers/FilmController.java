@@ -24,17 +24,17 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
-        return filmService.add(film);
+        return filmService.addFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
-        return filmService.update(film);
+        return filmService.updateFilm(film);
     }
 
     @DeleteMapping("/{id}")
     public Integer removeFilm(@PathVariable Integer id) {
-        return filmService.remove(id);
+        return filmService.removeFilm(id);
     }
 
     @PutMapping("/{id}/like/{userId}")

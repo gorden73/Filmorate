@@ -32,17 +32,17 @@ public class UserController {
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-        return userService.add(user);
+        return userService.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        return userService.update(user);
+        return userService.updateUser(user);
     }
 
     @DeleteMapping("/{id}")
     public Integer removeUser(@PathVariable Integer id) {
-        return userService.remove(id);
+        return userService.removeUser(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

@@ -74,21 +74,21 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-    public Film add(Film film) {
+    public Film addFilm(Film film) {
         if (checkAddValidData(film)) {
             return filmStorage.addFilm(film);
         }
         return film;
     }
 
-    public Film update(Film film) {
+    public Film updateFilm(Film film) {
         if (checkUpdateValidData(film) && checkAddValidData(film)) {
             return filmStorage.updateFilm(film);
         }
         return film;
     }
 
-    public Integer remove(Integer id) {
+    public Integer removeFilm(Integer id) {
         return filmStorage.removeFilm(id);
     }
 

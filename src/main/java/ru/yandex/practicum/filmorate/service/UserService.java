@@ -57,18 +57,22 @@ public class UserService {
         return userStorage.getAllUsers();
     }
 
-    public User add(User user) {
+    public User addUser(User user) {
         if (checkValidData(user)) {
             return userStorage.addUser(user);
         }
         return user;
     }
 
-    public User update(User user) {
+    public User updateUser(User user) {
         if (checkUpdateValidData(user)) {
             return userStorage.updateUser(user);
         }
         return user;
+    }
+
+    public Integer removeUser(Integer id) {
+        return userStorage.removeUser(id);
     }
 
     public User addToFriends(Integer id, Integer friendId) {
@@ -118,9 +122,5 @@ public class UserService {
             throw new ElementNotFoundException("пользователь " + id);
         }
         return userStorage.getUser(id);
-    }
-
-    public Integer remove(Integer id) {
-        return userStorage.removeUser(id);
     }
 }
