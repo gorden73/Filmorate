@@ -68,6 +68,9 @@ public class FilmController {
         if (count <= 0) {
             throw new IncorrectParameterException("count");
         }
+        if (!sort.equalsIgnoreCase("asc") && !sort.equalsIgnoreCase("desc")) {
+            throw new IncorrectParameterException("sort");
+        }
         return filmService.getCommonFilms(userId, friendId, sort, count);
     }
 }
