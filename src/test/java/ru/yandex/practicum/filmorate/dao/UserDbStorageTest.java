@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.yandex.practicum.filmorate.dao.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -69,7 +70,8 @@ class UserDbStorageTest {
 
     @Test
     void shouldReturnUserById() {
-        assertThat(userDbStorage.getUser(1)).isEqualTo(new User(1,"mail", "login", "name",
+        assertThat(userDbStorage.getUserById(1).get()).isEqualTo(new User(1,"mail", "login",
+                "name",
                 LocalDate.of(1990, 03, 8)));
     }
 }
