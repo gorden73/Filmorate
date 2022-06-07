@@ -5,12 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Repository
 @Slf4j
@@ -59,8 +62,23 @@ public class LikesDao {
         int mpa = rs.getInt("mpa");
         Set<Integer> likes = new HashSet<>(jdbcTemplate.query(SQL_GET_LIKES, (rs1, rowNum1) ->
                 (rs1.getInt("user_id")), id));
-        List<Integer> genres = new ArrayList<>(jdbcTemplate.query(SQL_GET_GENRES,
-                (rs2, rowNum) -> (rs2.getInt("genre_id")), id));
+        Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES,
+                (rs2, rowNum) -> (new Genre(rs2.getInt("genre_id"))), id));
         return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
     }
+
+    /*public Collection<Film> getRecommendations(Integer userId) {
+//
+//        надо залезть в БД, выгрузить user_id (второго пользователя) с максимальным количеством похожих лайков
+//        с пользователем 1
+//        и добавить одинаковые лайки в лист (№1)
+//                затем взять все лайки 2 пользователя и выгрузить от этого сета лайки, отличные от №1
+        *//*
+        String SQL_GET_USER_WITH_COMMON_LIKED_FILMS =
+        "SELECT user_id
+        FROM likes
+        WHERE
+         *//*
+        return
+    }*/
 }
