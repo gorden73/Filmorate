@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -33,7 +34,7 @@ public class FilmDbStorage implements FilmStorage {
     private static final String SQL_UPDATE_GENRE = "INSERT INTO film_genre(film_id, genre_id) VALUES(?, ?)";
     private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
     private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l ON f.film_id = " +
-            "l.film_id WHERE f.film_id = ? GROUP BY f.film_id";
+            "l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
@@ -48,7 +49,7 @@ public class FilmDbStorage implements FilmStorage {
         for (Film f : filmList) {
             filmMap.put(f.getId(), f);
         }
-        log.debug("Запрошен список фильмов.");
+        log.debug("Запрошен список всех фильмов.");
         return filmMap;
     }
 
@@ -61,8 +62,11 @@ public class FilmDbStorage implements FilmStorage {
         int mpa = rs.getInt("mpa");
         Set<Integer> likes = new HashSet<>(jdbcTemplate.query(SQL_GET_LIKES, (rs1, rowNum1) ->
                 (rs1.getInt("user_id")), id));
-        List<Integer> genres = new ArrayList<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
-                (rs2.getInt("genre_id")), id));
+        Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
+                (new Genre(rs2.getInt("genre_id"))), id));
+        if (genres.isEmpty()) {
+            return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, null);
+        }
         return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
     }
 
@@ -76,10 +80,10 @@ public class FilmDbStorage implements FilmStorage {
         if (filmRows.next()) {
             if (film.getGenres() == null) {
                 return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                        film.getReleaseDate(), film.getDuration(), film.getMpa(), new HashSet<>(), new ArrayList<>());
+                        film.getReleaseDate(), film.getDuration(), film.getMpa(), new HashSet<>(), null);
             } else {
-                for (Integer genre : film.getGenres()) {
-                    jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"), genre);
+                for (Genre genre : film.getGenres()) {
+                    jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"), genre.getId());
                 }
                 return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
                         film.getReleaseDate(), film.getDuration(), film.getMpa(), film.getGenres());
@@ -93,14 +97,15 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(SQL_UPDATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
         log.debug("Обновлен фильм {}.", film.getId());
-        if (film.getGenres() == null) {
+        if (film.getGenres() == null || film.getGenres().isEmpty()) {
+            jdbcTemplate.update(SQL_DELETE_GENRE, film.getId());
             return film;
         }
-        if (!film.getGenres().isEmpty()) {
+        for (Genre genre : film.getGenres()) {
             jdbcTemplate.update(SQL_DELETE_GENRE, film.getId());
-            for (Integer genre : film.getGenres()) {
-                jdbcTemplate.update(SQL_UPDATE_GENRE, film.getId(), genre);
-            }
+        }
+        for (Genre genre : film.getGenres()) {
+            jdbcTemplate.update(SQL_UPDATE_GENRE, film.getId(), genre.getId());
         }
         return film;
     }
@@ -109,27 +114,36 @@ public class FilmDbStorage implements FilmStorage {
     public Integer removeFilm(Integer id) {
         jdbcTemplate.update(SQL_DELETE_FILM, id);
         jdbcTemplate.update(SQL_DELETE_GENRE, id);
-        log.debug("Удален фильм {}", id);
+        log.debug("Удален фильм {}.", id);
         return id;
     }
 
     @Override
     public Film getFilm(Integer id) {
+        log.debug("Получен фильм {}.", id);
         return jdbcTemplate.query(SQL_GET_FILM, (rs, rowNum) -> makeFilm(rs), id).get(0);
     }
 
     @Override
     public Collection<Film> getPopularFilms(Integer count) {
+        log.debug("Запрошены {} популярных фильмов.", count);
         return likesDao.getPopularFilms(count);
     }
 
     @Override
     public Integer addLike(Integer filmId, Integer userId) {
+        log.debug("Пользователь {} поставил лайк фильму {}.", userId, filmId);
         return likesDao.addLike(filmId, userId);
     }
 
     @Override
     public Integer removeLike(Integer filmId, Integer userId) {
+        log.debug("Пользователь {} удалил лайк фильму {}.", userId, filmId);
         return likesDao.addLike(filmId, userId);
+    }
+
+    @Override
+    public Collection<Film> getRecommendations(Integer userId) {
+        return null;
     }
 }

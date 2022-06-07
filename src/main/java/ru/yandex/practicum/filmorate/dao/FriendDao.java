@@ -81,10 +81,12 @@ public class FriendDao {
     }
 
     public Collection<User> getUserFriends(Integer id) {
+        log.debug("Запрошен список друзей пользователя {}.", id);
         return jdbcTemplate.query(SQL_GET_USER_FRIENDS, (rs, rowNum) -> makeUser(rs), id);
     }
 
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
+        log.debug("Запрошен список общих друзей пользователя {} и {}.", id, id1);
         return jdbcTemplate.query(SQL_GET_MUTUAL_FRIENDS, (rs, rowNum) -> makeUser(rs), id, id1);
     }
 

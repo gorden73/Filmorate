@@ -43,7 +43,7 @@ public class UserDbStorage implements UserStorage {
         for (User u : userList) {
             userMap.put(u.getId(), u);
         }
-        log.debug("Запрошен список пользователей.");
+        log.debug("Запрошен список всех пользователей.");
         return userMap;
     }
 
