@@ -4,7 +4,9 @@ import lombok.*;
 
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -22,6 +24,12 @@ public class User {
     @NonNull
     private LocalDate birthday;
     private Set<Integer> friends;
+    private Map<Integer, Boolean> friendStatus;
+    private Set<Integer> likedFilms;
+
+    public User() {
+        super();
+    }
 
     public User(Integer id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
@@ -30,5 +38,29 @@ public class User {
         this.name = name;
         this.birthday = birthday;
         this.friends = new HashSet<>();
+        this.friendStatus = new HashMap<>();
+        this.likedFilms = new HashSet<>();
+    }
+
+    public User(String email, String login, String name, LocalDate birthday) {
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+        this.friends = new HashSet<>();
+        this.friendStatus = new HashMap<>();
+        this.likedFilms = new HashSet<>();
+    }
+
+    public User(Integer id, String email, String login, String name, LocalDate birthday, HashSet<Integer> friends,
+                HashMap<Integer, Boolean> friendStatus, HashSet<Integer> likedFilms) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+        this.friends = friends;
+        this.friendStatus = friendStatus;
+        this.likedFilms = likedFilms;
     }
 }
