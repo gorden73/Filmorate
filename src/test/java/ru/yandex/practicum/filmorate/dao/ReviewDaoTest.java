@@ -32,9 +32,9 @@ public class ReviewDaoTest {
     private final ReviewLikeDao reviewLikeDao;
     private final UserDbStorage userDbStorage;
     private final FilmDbStorage filmDbStorage;
-    private Review review1 = new Review(null, 1, 1, "Great", true, 0);
-    private Review review2 = new Review(null, 1, 2, "Great", true, 0);
-    private Review reviewUPD = new Review(1, 1, 1, "Terrible", false, 0);
+    private Review review1 = new Review(null, "Great", true, 1, 1, 0);
+    private Review review2 = new Review(null, "Great", true, 1, 2, 0);
+    private Review reviewUPD = new Review(1, "Terrible", false, 1, 1, 0);
     private User user = new User("test@mail.ru", "test", "Test", LocalDate.of(2000, 1, 1));
     private Film film = new Film("Test", "Test", LocalDate.of(2000, 1, 1), 90, new Mpa(1));
     private Film film2 = new Film("Test2", "Test2", LocalDate.of(2000, 1, 1), 90, new Mpa(1));

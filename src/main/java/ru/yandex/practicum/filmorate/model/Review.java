@@ -10,20 +10,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @EqualsAndHashCode
 public class Review {
     private Integer reviewId;
-    private Integer userId;
-    private Integer filmId;
     private String content;
     @JsonProperty("isPositive")
     private boolean isPositive;
+    private Integer userId;
+    private Integer filmId;
     private Integer useful;
 
-    public Review(Integer reviewId, Integer userId, Integer filmId, String content,
-                  boolean isPositive, Integer useful) {
+    public Review(Integer reviewId, String content, boolean isPositive,
+                  Integer userId, Integer filmId, Integer useful) {
         this.reviewId = reviewId;
-        this.userId = userId;
-        this.filmId = filmId;
         this.content = content;
         this.isPositive = isPositive;
+        this.userId = userId;
+        this.filmId = filmId;
         this.useful = useful;
     }
 }
