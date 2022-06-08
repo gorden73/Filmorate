@@ -82,4 +82,9 @@ public class InMemoryUserStorage implements UserStorage {
     public User getUser(Integer id) {
         return users.get(id);
     }
+
+    @Override
+    public Optional<User> getUserById(Integer id) {
+        return Optional.of(users.get(id));
+    }
 }
