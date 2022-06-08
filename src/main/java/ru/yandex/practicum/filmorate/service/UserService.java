@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -122,5 +123,13 @@ public class UserService {
             throw new ElementNotFoundException("пользователь " + id);
         }
         return userStorage.getUser(id);
+    }
+
+    public Optional<User> findUserById(Integer id) {
+        final Optional<User> optionalUser = userStorage.getUserById(id);
+        if (optionalUser.isEmpty()) {
+            throw new ElementNotFoundException(String.format("Пользователь c ID %s не найден", id));
+        }
+        return userStorage.getUserById(id);
     }
 }
