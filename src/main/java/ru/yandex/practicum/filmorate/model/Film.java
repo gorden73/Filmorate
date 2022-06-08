@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -24,7 +22,7 @@ public class Film {
     private Integer duration;
     private Set<Integer> likes;
     private Mpa mpa;
-    private List<Integer> genres;
+    private Set<Genre> genres;
 
     public Film() {
         super();
@@ -38,7 +36,7 @@ public class Film {
         this.duration = duration;
         this.mpa = mpa;
         this.likes = new HashSet<>();
-        this.genres = new ArrayList<>();
+        this.genres = new HashSet<>();
     }
 
     public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
@@ -48,7 +46,7 @@ public class Film {
         this.duration = duration;
         this.mpa = mpa;
         this.likes = new HashSet<>();
-        this.genres = new ArrayList<>();
+        this.genres = new HashSet<>();
     }
 
     public Film(String name, LocalDate releaseDate, String description, Integer duration, Mpa mpa) {
@@ -58,11 +56,11 @@ public class Film {
         this.duration = duration;
         this.mpa = mpa;
         this.likes = new HashSet<>();
-        this.genres = new ArrayList<>();
+        this.genres = new HashSet<>();
     }
 
     public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
-                Set<Integer> likes, List<Integer> genres) {
+                Set<Integer> likes, Set<Genre> genres) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -74,7 +72,7 @@ public class Film {
     }
 
     public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
-                List<Integer> genres) {
+                Set<Genre> genres) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -86,7 +84,7 @@ public class Film {
     }
 
     public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
-                List<Integer> genres) {
+                Set<Genre> genres) {
         this.id = id;
         this.name = name;
         this.description = description;
