@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.TypeOfMpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
@@ -31,11 +32,14 @@ class FilmControllerTest {
     private Film film8;
     private Film film9;
     private Film film10;
+    private UserService userService;
 
     @BeforeEach
     void start() {
         FilmStorage filmStorage = new InMemoryFilmStorage();
-        controller = new FilmController(new FilmService(filmStorage));
+
+        //TODO: кажется по ТЗ нужно тестировать только хранилища
+        controller = new FilmController(new FilmService(filmStorage, userService));
         createFilmsForTests();
     }
 
