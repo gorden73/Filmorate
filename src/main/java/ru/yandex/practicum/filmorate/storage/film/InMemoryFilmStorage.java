@@ -77,7 +77,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         return userId;
     }
 
+
     public Collection<Film> getRecommendations(Integer userId) {
         return films.values(); // НАДО ДОРАБОТАТЬ
+    }
+
+    @Override
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId,
+                                           String sort, Integer count) {
+        return null; //TODO: реализовать метод
+
     }
 }
