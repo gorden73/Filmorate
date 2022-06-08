@@ -7,23 +7,26 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
     private static final LocalDate MOVIE_BIRTHDAY = LocalDate.of(1895, 12, 28);
+    private final UserService userService;
 
-
-    @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
+        this.userService = userService;
     }
 
     private boolean checkValidData(Film film) {
@@ -126,5 +129,15 @@ public class FilmService {
 
     public Collection<Film> getRecommendations(Integer userId) {
         return filmStorage.getRecommendations(userId);
+    }
+
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId,
+                                           String sort, Integer count) {
+        final Optional<User> optionalUser = userService.findUserById(userId);
+        final Optional<User> optionalFriend = userService.findUserById(friendId);
+        if (optionalUser.isPresent() && optionalFriend.isPresent()) {
+            return filmStorage.getCommonFilms(userId, friendId, sort, count);
+        }
+        return List.of();
     }
 }
