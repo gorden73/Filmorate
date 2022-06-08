@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -61,16 +60,17 @@ public class FilmController {
     @GetMapping("/common")
     public Collection<Film> getCommonFilms(@RequestParam Integer userId,
                                            @RequestParam Integer friendId,
-                                           @RequestParam(defaultValue = "desc",
-                                                   required = false) String sort,
+                                           @RequestParam(defaultValue = "0",
+                                                   required = false) Integer page,
                                            @RequestParam(defaultValue = "10",
                                                    required = false) Integer count) {
+        if (page < 0) {
+            throw new IllegalArgumentException("page");
+        }
         if (count <= 0) {
-            throw new IncorrectParameterException("count");
+            throw new IllegalArgumentException("count");
         }
-        if (!sort.equalsIgnoreCase("asc") && !sort.equalsIgnoreCase("desc")) {
-            throw new IncorrectParameterException("sort");
-        }
-        return filmService.getCommonFilms(userId, friendId, sort, count);
+        Integer from = count * page;
+        return filmService.getCommonFilms(userId, friendId, count, from);
     }
 }

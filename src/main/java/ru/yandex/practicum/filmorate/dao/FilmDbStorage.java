@@ -147,8 +147,7 @@ public class FilmDbStorage implements FilmStorage {
         return null;
     }
 
-    public Collection<Film> getCommonFilms(Integer userId, Integer friendId,
-                                           String sort, Integer count) {
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count) {
         final String sql = "select l.film_id, f.name, description, release_date, duration, mpa " +
                 "    FROM likes AS l " +
                 "    JOIN films AS f ON f.film_id = l.film_id " +
@@ -161,10 +160,9 @@ public class FilmDbStorage implements FilmStorage {
                 "        SELECT friend_id AS user_id FROM friends WHERE friend_id = ? " +
                 "    ) " +
                 "GROUP BY l.film_id " +
-                "ORDER BY count(distinct user_id) DESC " +
-                "LIMIT ?";
+                "ORDER BY count(distinct user_id) DESC";
         return jdbcTemplate.query(sql,
-                (rs, rowNum) -> makeFilm(rs), userId, friendId, count);
+                (rs, rowNum) -> makeFilm(rs), userId, friendId);
 
     }
 }

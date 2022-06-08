@@ -83,9 +83,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getCommonFilms(Integer userId, Integer friendId,
-                                           String sort, Integer count) {
-        return null; //TODO: реализовать метод
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count) {
+        return null;
 
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -132,11 +134,15 @@ public class FilmService {
     }
 
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId,
-                                           String sort, Integer count) {
+                                           Integer count, Integer from) {
         final Optional<User> optionalUser = userService.findUserById(userId);
         final Optional<User> optionalFriend = userService.findUserById(friendId);
         if (optionalUser.isPresent() && optionalFriend.isPresent()) {
-            return filmStorage.getCommonFilms(userId, friendId, sort, count);
+            return filmStorage.getCommonFilms(userId, friendId, count)
+                    .stream()
+                    .skip(from)
+                    .limit(count)
+                    .collect(Collectors.toList());
         }
         return List.of();
     }
