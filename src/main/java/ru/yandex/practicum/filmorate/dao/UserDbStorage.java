@@ -112,4 +112,11 @@ public class UserDbStorage implements UserStorage {
     public User getUser(Integer id) {
         return jdbcTemplate.query(SQL_GET_USER_BY_ID, (rs, rowNum) -> makeUser(rs), id).get(0);
     }
+
+    public Optional<User> getUserById(Integer id) {
+        return jdbcTemplate
+                .query(SQL_GET_USER_BY_ID, (rs, rowNum) -> makeUser(rs), id)
+                .stream()
+                .findFirst();
+    }
 }
