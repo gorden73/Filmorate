@@ -20,6 +20,8 @@ public interface FilmStorage {
 
     Collection<Film> getPopularFilms(Integer genreId, Integer year);
 
+    Collection<Film> getFilmsBySearch(String query, String by);
+
     Integer addLike(Integer filmId, Integer userId);
 
     Integer removeLike(Integer filmId, Integer userId);

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -170,6 +171,13 @@ public class FilmService {
         return filmStorage.getRecommendations(userId, from, size);
     }
 
+    public Collection<Film> getFilmsBySearch(String query, String by)
+            throws IncorrectParameterException {
+        String queryResult = query.toLowerCase().trim();
+        String byResult = by.toLowerCase().trim();
+        return filmStorage.getFilmsBySearch(queryResult, byResult);
+    }
+
     public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy,
                                                Integer from, Integer count) {
         directorService.findDirectorById(directorId);
@@ -201,3 +209,4 @@ public class FilmService {
         return List.of();
     }
 }
+

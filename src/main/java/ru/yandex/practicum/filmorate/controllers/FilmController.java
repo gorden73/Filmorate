@@ -102,4 +102,11 @@ public class FilmController {
         Integer from = count * page;
         return filmService.getCommonFilms(userId, friendId, count, from);
     }
+
+    @GetMapping("/search")
+    public Collection<Film> getFilmsBySearch(
+            @RequestParam (defaultValue = "") String query,
+            @RequestParam (defaultValue = "") String by) {
+        return filmService.getFilmsBySearch(query, by);
+    }
 }
