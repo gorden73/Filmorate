@@ -63,9 +63,6 @@ public class FriendDaoImpl implements FriendDao {
     }
 
     public Integer removeFromFriends(Integer id, Integer friendId) {
-        if (checkFriend(id, friendId)) {
-            throw new ElementNotFoundException("пользователь " + id);
-        }
         if (!checkFriend(friendId, id)) {
             throw new ElementNotFoundException("пользователь " + friendId);
         }
