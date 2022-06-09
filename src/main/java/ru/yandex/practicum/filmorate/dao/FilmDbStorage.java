@@ -154,11 +154,11 @@ public class FilmDbStorage implements FilmStorage {
                 "    JOIN mpa AS m ON f.mpa = m.id " +
                 "    LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
                 "    LEFT JOIN genres AS g ON g.genre_id = fg.genre_id " +
-                "    WHERE user_id in ( " +
-                "        SELECT user_id AS user_id FROM friends WHERE user_id = ? " +
-                "        UNION " +
-                "        SELECT friend_id AS user_id FROM friends WHERE friend_id = ? " +
-                "    ) " +
+                "    WHERE user_id = ? AND " +
+                "          l.film_id in ( " +
+                "            SELECT l.film_id " +
+                "            FROM likes AS l " +
+                "            WHERE user_id = ? )" +
                 "GROUP BY l.film_id " +
                 "ORDER BY count(distinct user_id) DESC";
         return jdbcTemplate.query(sql,
