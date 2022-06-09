@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -77,7 +78,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return userId;
     }
 
-    public Collection<Film> getRecommendations(Integer userId) {
-        return films.values(); // НАДО ДОРАБОТАТЬ
+    public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
+        return List.of();
     }
 }

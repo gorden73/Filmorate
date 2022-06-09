@@ -52,8 +52,9 @@ public class User {
         this.likedFilms = new HashSet<>();
     }
 
-    public User(Integer id, String email, String login, String name, LocalDate birthday, HashSet<Integer> friends,
-                HashMap<Integer, Boolean> friendStatus, HashSet<Integer> likedFilms) {
+    public User(Integer id, String email, String login, String name, LocalDate birthday,
+                HashSet<Integer> friends, HashMap<Integer, Boolean> friendStatus,
+                HashSet<Integer> likedFilms) {
         this.id = id;
         this.email = email;
         this.login = login;
