@@ -84,7 +84,7 @@ public class InMemoryUserStorage implements UserStorage {
         return users.get(id);
     }
 
-    public Collection<Film> getRecommendations(Integer userId) {
+    public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
         return null;
     }
 }

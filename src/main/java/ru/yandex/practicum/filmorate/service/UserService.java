@@ -127,7 +127,7 @@ public class UserService {
         return userStorage.getUser(id);
     }
 
-    public Collection<Film> getRecommendations(Integer userId) {
-        return userStorage.getRecommendations(userId);
+    public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
+        return userStorage.getRecommendations(userId, from, size);
     }
 }

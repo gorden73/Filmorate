@@ -116,7 +116,7 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.query(SQL_GET_USER_BY_ID, (rs, rowNum) -> makeUser(rs), id).get(0);
     }
 
-    public Collection<Film> getRecommendations(Integer userId) {
-        return likesDao.getRecommendations(userId);
+    public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
+        return likesDao.getRecommendations(userId, from, size);
     }
 }

@@ -12,10 +12,8 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
@@ -75,9 +73,9 @@ public class LikesDao {
         return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
     }
 
-    public Collection<Film> getRecommendations(Integer userId) {
-        List<Film> films = jdbcTemplate.query(SQL_GET_RECOMMENDATION_FILM, (rs, rowNum) -> makeFilm(rs), userId, userId,
-                userId);
+    public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
+        Collection<Film> films = jdbcTemplate.query(SQL_GET_RECOMMENDATION_FILM, (rs, rowNum) -> makeFilm(rs), userId,
+                userId, userId).stream().skip(from).limit(size).collect(Collectors.toList());
         if (films.isEmpty()) {
             throw new ElementNotFoundException("фильм/фильмы, рекомендованные к просмотру. Похоже Вы уже посмотрели " +
                     "все наиболее популярные фильмы.");

@@ -25,5 +25,5 @@ public interface UserStorage {
 
     User addToFriends(Integer id, Integer friendId);
 
-    Collection<Film> getRecommendations(Integer userId);
+    Collection<Film> getRecommendations(Integer userId, Integer from, Integer size);
 }
