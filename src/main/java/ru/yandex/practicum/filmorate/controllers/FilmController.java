@@ -60,10 +60,8 @@ public class FilmController {
     @GetMapping("/common")
     public Collection<Film> getCommonFilms(@RequestParam Integer userId,
                                            @RequestParam Integer friendId,
-                                           @RequestParam(defaultValue = "0",
-                                                   required = false) Integer page,
-                                           @RequestParam(defaultValue = "10",
-                                                   required = false) Integer count) {
+                                           @RequestParam(defaultValue = "0") Integer page,
+                                           @RequestParam(defaultValue = "10") Integer count) {
         if (page < 0) {
             throw new IllegalArgumentException("page");
         }
