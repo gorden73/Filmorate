@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Slf4j
 public class DirectorDaoImpl implements DirectorDao {
 
     private static final String SQL_CREATE = "INSERT INTO directors (name) VALUES (?)";
@@ -32,7 +34,6 @@ public class DirectorDaoImpl implements DirectorDao {
     private static final String SQL_UPDATE = "UPDATE directors SET name = ? WHERE id = ?";
     private static final String SQL_DELETE = "DELETE FROM directors WHERE id = ?";
     private final JdbcTemplate jdbcTemplate;
-    private final Logger log = LoggerFactory.getLogger(DirectorDaoImpl.class);
 
     @Autowired
     public DirectorDaoImpl(JdbcTemplate jdbcTemplate) {
