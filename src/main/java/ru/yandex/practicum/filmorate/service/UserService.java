@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.LikesDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -18,6 +20,7 @@ import java.util.Map;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+
 
     @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
@@ -122,5 +125,9 @@ public class UserService {
             throw new ElementNotFoundException("пользователь " + id);
         }
         return userStorage.getUser(id);
+    }
+
+    public Collection<Film> getRecommendations(Integer userId) {
+        return userStorage.getRecommendations(userId);
     }
 }

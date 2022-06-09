@@ -76,8 +76,4 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.get(filmId).getLikes().remove(userId);
         return userId;
     }
-
-    public Collection<Film> getRecommendations(Integer userId) {
-        return films.values(); // НАДО ДОРАБОТАТЬ
-    }
 }

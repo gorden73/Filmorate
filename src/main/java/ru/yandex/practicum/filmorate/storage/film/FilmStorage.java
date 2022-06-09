@@ -21,6 +21,4 @@ public interface FilmStorage {
     Integer addLike(Integer filmId, Integer userId);
 
     Integer removeLike(Integer filmId, Integer userId);
-
-    Collection<Film> getRecommendations(Integer userId);
 }

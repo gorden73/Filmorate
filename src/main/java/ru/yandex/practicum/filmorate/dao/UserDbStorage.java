@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -18,6 +19,7 @@ import java.util.*;
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final FriendDao friendDao;
+    private final LikesDao likesDao;
     private static final String SQL_GET_USERS = "SELECT * FROM users";
     private static final String SQL_GET_FRIENDS = "SELECT friend_id FROM friends WHERE user_id = ?";
     private static final String SQL_GET_FRIEND_STATUS = "SELECT * FROM friends WHERE user_id = ?";
@@ -31,9 +33,10 @@ public class UserDbStorage implements UserStorage {
     private static final String SQL_GET_USER_BY_ID = "SELECT * FROM users WHERE user_id = ?";
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendDao friendDao) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendDao friendDao, LikesDao likesDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.friendDao = friendDao;
+        this.likesDao = likesDao;
     }
 
     @Override
@@ -111,5 +114,9 @@ public class UserDbStorage implements UserStorage {
 
     public User getUser(Integer id) {
         return jdbcTemplate.query(SQL_GET_USER_BY_ID, (rs, rowNum) -> makeUser(rs), id).get(0);
+    }
+
+    public Collection<Film> getRecommendations(Integer userId) {
+        return likesDao.getRecommendations(userId);
     }
 }

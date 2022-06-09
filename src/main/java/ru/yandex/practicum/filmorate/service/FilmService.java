@@ -123,8 +123,4 @@ public class FilmService {
         }
         return filmStorage.getFilm(id);
     }
-
-    public Collection<Film> getRecommendations(Integer userId) {
-        return filmStorage.getRecommendations(userId);
-    }
 }

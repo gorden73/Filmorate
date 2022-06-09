@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -27,6 +29,12 @@ public class LikesDao {
     private static final String SQL_GET_FILMS = "SELECT * FROM films";
     private static final String SQL_GET_LIKES = "SELECT user_id FROM likes WHERE film_id = ?";
     private static final String SQL_GET_GENRES = "SELECT genre_id FROM film_genre WHERE film_id = ?";
+    private static final String SQL_GET_RECOMMENDATION_FILM = "SELECT * FROM films WHERE film_id IN (SELECT film_id " +
+            "FROM likes WHERE user_id IN (SELECT user_id FROM likes WHERE user_id IN (SELECT user_id FROM " +
+            "(SELECT user_id, film_id, COUNT(film_id) AS count FROM likes WHERE film_id NOT IN (SELECT film_id " +
+            "FROM likes WHERE user_id = ?) AND user_id != ? GROUP BY user_id, film_id ) GROUP BY user_id " +
+            "ORDER BY count DESC) GROUP BY user_id ORDER BY COUNT(film_id) DESC LIMIT 1) AND film_id NOT IN " +
+            "(SELECT film_id FROM likes WHERE user_id = ?))";
 
     @Autowired
     public LikesDao(JdbcTemplate jdbcTemplate) {
@@ -67,18 +75,13 @@ public class LikesDao {
         return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
     }
 
-    /*public Collection<Film> getRecommendations(Integer userId) {
-//
-//        надо залезть в БД, выгрузить user_id (второго пользователя) с максимальным количеством похожих лайков
-//        с пользователем 1
-//        и добавить одинаковые лайки в лист (№1)
-//                затем взять все лайки 2 пользователя и выгрузить от этого сета лайки, отличные от №1
-        *//*
-        String SQL_GET_USER_WITH_COMMON_LIKED_FILMS =
-        "SELECT user_id
-        FROM likes
-        WHERE
-         *//*
-        return
-    }*/
+    public Collection<Film> getRecommendations(Integer userId) {
+        List<Film> films = jdbcTemplate.query(SQL_GET_RECOMMENDATION_FILM, (rs, rowNum) -> makeFilm(rs), userId, userId,
+                userId);
+        if (films.isEmpty()) {
+            throw new ElementNotFoundException("фильм/фильмы, рекомендованные к просмотру. Похоже Вы уже посмотрели " +
+                    "все наиболее популярные фильмы.");
+        }
+        return films;
+    }
 }
