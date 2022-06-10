@@ -56,6 +56,7 @@ public class LikesDao {
         if (films.isEmpty()) {
             return jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs), count);
         }
+        log.debug("Запрошены {} популярных фильмов.", count);
         return films;
     }
 
@@ -80,6 +81,7 @@ public class LikesDao {
             throw new ElementNotFoundException("фильм/фильмы, рекомендованные к просмотру. Похоже Вы уже посмотрели " +
                     "все наиболее популярные фильмы.");
         }
+        log.debug("Запрошены рекомендации фильмов пользователю {} в размере {} результатов.", userId, size);
         return films;
     }
 }

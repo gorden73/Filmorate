@@ -126,19 +126,16 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getPopularFilms(Integer count) {
-        log.debug("Запрошены {} популярных фильмов.", count);
         return likesDao.getPopularFilms(count);
     }
 
     @Override
     public Integer addLike(Integer filmId, Integer userId) {
-        log.debug("Пользователь {} поставил лайк фильму {}.", userId, filmId);
         return likesDao.addLike(filmId, userId);
     }
 
     @Override
     public Integer removeLike(Integer filmId, Integer userId) {
-        log.debug("Пользователь {} удалил лайк фильму {}.", userId, filmId);
         return likesDao.removeLike(filmId, userId);
     }
 }
