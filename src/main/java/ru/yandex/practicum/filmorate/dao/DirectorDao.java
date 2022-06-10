@@ -9,7 +9,7 @@ public interface DirectorDao {
 
     Optional<Director> create(Director entity);
 
-    Collection<Director> getAllFilms();
+    Collection<Director> getAllDirectors();
 
     Optional<Director> getDirector(Integer id);
 
