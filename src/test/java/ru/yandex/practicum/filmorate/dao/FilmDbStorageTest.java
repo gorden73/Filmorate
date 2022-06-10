@@ -44,7 +44,8 @@ class FilmDbStorageTest {
         Film returnedFilm = films.get(1);
         assertThat(returnedFilm.getId()).isEqualTo(1);
         assertThat(returnedFilm.getName()).isEqualTo("The Rock");
-        assertThat(returnedFilm.getDescription()).isEqualTo("Starring Nicolas Cage and Sean Connery");
+        assertThat(returnedFilm.getDescription()).isEqualTo("Starring Nicolas Cage and " +
+                "Sean Connery");
         assertThat(returnedFilm.getReleaseDate()).isEqualTo("1996-06-07");
         assertThat(returnedFilm.getDuration()).isEqualTo(136);
         assertThat(returnedFilm.getMpa().getId()).isEqualTo(1);
@@ -96,8 +97,9 @@ class FilmDbStorageTest {
 
     @Test
     void shouldUpdateFilmWhenFilmHasNotGenres() {
-        Film updateFilm = new Film(1, "updateName", "updateDescription", LocalDate.of(2000, 12, 12),
-                100, new Mpa(4), new HashSet<>(), null);
+        Film updateFilm = new Film(1, "updateName", "updateDescription",
+                LocalDate.of(2000, 12, 12),100, new Mpa(4),
+                new HashSet<>(), null);
         filmDbStorage.updateFilm(updateFilm);
         assertThat(updateFilm).isEqualTo(filmDbStorage.getAllFilms().get(1));
     }
@@ -105,8 +107,9 @@ class FilmDbStorageTest {
     @Test
     void shouldUpdateFilmWhenFilmHasGenres() {
         filmDbStorage.addFilm(film1);
-        Film updateFilm = new Film(2, "updateName", "updateDescription", LocalDate.of(2000, 12, 12),
-                100, new Mpa(4), new HashSet<>(), new HashSet<>(List.of(new Genre(3), new Genre(4))));
+        Film updateFilm = new Film(2, "updateName", "updateDescription",
+                LocalDate.of(2000, 12, 12),100, new Mpa(4),
+                new HashSet<>(), new HashSet<>(List.of(new Genre(3), new Genre(4))));
         filmDbStorage.updateFilm(updateFilm);
         assertThat(updateFilm).isEqualTo(filmDbStorage.getAllFilms().get(2));
     }
@@ -122,7 +125,8 @@ class FilmDbStorageTest {
     @Test
     void shouldReturnFilmById() {
         assertThat(filmDbStorage.getFilm(1)).isEqualTo(new Film(1, "The Rock",
-                "Starring Nicolas Cage and Sean Connery", LocalDate.of(1996, 6, 7),
-                136, new Mpa(1), new HashSet<>(), null));
+                "Starring Nicolas Cage and Sean Connery",
+                LocalDate.of(1996, 6, 7),136, new Mpa(1),
+                new HashSet<>(), null));
     }
 }

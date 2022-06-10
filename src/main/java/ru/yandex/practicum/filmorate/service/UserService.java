@@ -81,9 +81,11 @@ public class UserService {
     public User addToFriends(Integer id, Integer friendId) {
         Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
+            log.error("Не найден пользователь {}.", id);
             throw new ElementNotFoundException("пользователь " + id);
         }
         if (!users.containsKey(friendId)) {
+            log.error("Не найден пользователь {}.", friendId);
             throw new ElementNotFoundException("пользователь " + friendId);
         }
         return userStorage.addToFriends(id, friendId);
@@ -92,9 +94,11 @@ public class UserService {
     public Integer removeFromFriends(Integer id, Integer removeFromId) {
         Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
+            log.error("Не найден пользователь {}.", id);
             throw new ElementNotFoundException("пользователь " + id);
         }
         if (!users.containsKey(removeFromId)) {
+            log.error("Не найден пользователь {}.", removeFromId);
             throw new ElementNotFoundException("пользователь " + removeFromId);
         }
         return userStorage.removeFromFriends(id, removeFromId);
@@ -111,9 +115,11 @@ public class UserService {
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
         Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
+            log.error("Не найден пользователь {}.", id);
             throw new ElementNotFoundException("пользователь " + id);
         }
         if (!users.containsKey(id1)) {
+            log.error("Не найден пользователь {}.", id1);
             throw new ElementNotFoundException("пользователь " + id1);
         }
         return userStorage.getMutualFriends(id, id1);
@@ -122,12 +128,18 @@ public class UserService {
     public User getUser(Integer id) {
         Map<Integer, User> users = userStorage.getAllUsers();
         if (!users.containsKey(id)) {
+            log.error("Не найден пользователь {}.", id);
             throw new ElementNotFoundException("пользователь " + id);
         }
         return userStorage.getUser(id);
     }
 
     public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
-        return userStorage.getRecommendations(userId, from, size);
+        if(userStorage.getUser(userId) != null) {
+            return userStorage.getRecommendations(userId, from, size);
+        } else {
+            log.error("Не найден пользователь {}.", userId);
+            throw new ElementNotFoundException(String.format("пользователь %d", userId));
+        }
     }
 }

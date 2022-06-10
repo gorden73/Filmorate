@@ -12,7 +12,9 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -20,18 +22,22 @@ import java.util.stream.Collectors;
 public class LikesDao {
     private final JdbcTemplate jdbcTemplate;
     private static final String SQL_ADD_LIKE = "INSERT INTO likes(user_id, film_id) VALUES (?, ?)";
-    private static final String SQL_REMOVE_LIKE = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
-    private static final String SQL_GET_TOP_FILMS = "SELECT f.film_id, f.name, f.description, f.release_date, " +
-            "f.duration, f.mpa, l.user_id FROM likes AS l RIGHT JOIN films AS f ON f.film_id = l.film_id " +
-            "GROUP BY f.film_id, l.user_id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
+    private static final String SQL_REMOVE_LIKE = "DELETE FROM likes WHERE user_id = ? AND " +
+            "film_id = ?";
+    private static final String SQL_GET_TOP_FILMS = "SELECT f.film_id, f.name, f.description, " +
+            "f.release_date, f.duration, f.mpa, l.user_id FROM likes AS l RIGHT JOIN films AS f " +
+            "ON f.film_id = l.film_id GROUP BY f.film_id, l.user_id ORDER BY COUNT(l.user_id) " +
+            "DESC LIMIT ?";
     private static final String SQL_GET_FILMS = "SELECT * FROM films";
     private static final String SQL_GET_LIKES = "SELECT user_id FROM likes WHERE film_id = ?";
-    private static final String SQL_GET_GENRES = "SELECT genre_id FROM film_genre WHERE film_id = ?";
-    private static final String SQL_GET_RECOMMENDATION_FILM = "SELECT * FROM films WHERE film_id IN (SELECT film_id " +
-            "FROM likes WHERE user_id IN (SELECT user_id FROM likes WHERE user_id IN (SELECT user_id FROM " +
-            "(SELECT user_id, film_id, COUNT(film_id) AS count FROM likes WHERE film_id NOT IN (SELECT film_id " +
-            "FROM likes WHERE user_id = ?) AND user_id != ? GROUP BY user_id, film_id ) GROUP BY user_id " +
-            "ORDER BY count DESC) GROUP BY user_id ORDER BY COUNT(film_id) DESC LIMIT 1) AND film_id NOT IN " +
+    private static final String SQL_GET_GENRES = "SELECT genre_id FROM film_genre WHERE " +
+            "film_id = ?";
+    private static final String SQL_GET_RECOMMENDATION_FILM = "SELECT * FROM films WHERE film_id " +
+            "IN (SELECT film_id FROM likes WHERE user_id IN (SELECT user_id FROM likes WHERE " +
+            "user_id IN (SELECT user_id FROM (SELECT user_id, film_id, COUNT(film_id) AS count " +
+            "FROM likes WHERE film_id NOT IN (SELECT film_id FROM likes WHERE user_id = ?) AND " +
+            "user_id != ? GROUP BY user_id, film_id ) GROUP BY user_id ORDER BY count DESC) " +
+            "GROUP BY user_id ORDER BY COUNT(film_id) DESC LIMIT 1) AND film_id NOT IN " +
             "(SELECT film_id FROM likes WHERE user_id = ?))";
 
     @Autowired
@@ -52,7 +58,8 @@ public class LikesDao {
     }
 
     public Collection<Film> getPopularFilms(Integer count) {
-        Collection<Film> films = jdbcTemplate.query(SQL_GET_TOP_FILMS, (rs, rowNum) -> makeFilm(rs), count);
+        Collection<Film> films = jdbcTemplate.query(SQL_GET_TOP_FILMS, (rs, rowNum) -> makeFilm(rs),
+                count);
         if (films.isEmpty()) {
             return jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs), count);
         }
@@ -75,13 +82,15 @@ public class LikesDao {
     }
 
     public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
-        Collection<Film> films = jdbcTemplate.query(SQL_GET_RECOMMENDATION_FILM, (rs, rowNum) -> makeFilm(rs), userId,
-                userId, userId).stream().skip(from).limit(size).collect(Collectors.toList());
+        Collection<Film> films = jdbcTemplate.query(SQL_GET_RECOMMENDATION_FILM, (rs, rowNum) ->
+                        makeFilm(rs), userId, userId, userId).stream().skip(from).limit(size)
+                .collect(Collectors.toList());
         if (films.isEmpty()) {
-            throw new ElementNotFoundException("фильм/фильмы, рекомендованные к просмотру. Похоже Вы уже посмотрели " +
-                    "все наиболее популярные фильмы.");
+            throw new ElementNotFoundException("фильм/фильмы, рекомендованные к просмотру. " +
+                    "Похоже Вы уже посмотрели все наиболее популярные фильмы.");
         }
-        log.debug("Запрошены рекомендации фильмов пользователю {} в размере {} результатов.", userId, size);
+        log.debug("Запрошены рекомендации фильмов пользователю {} в размере {} результатов.",
+                userId, size);
         return films;
     }
 }

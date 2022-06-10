@@ -12,7 +12,8 @@ import java.util.Collection;
 @Slf4j
 public class GenreDao {
     private final JdbcTemplate jdbcTemplate;
-    private static final String SQL_GET_GENRE_BY_ID = "SELECT genre_id FROM genres WHERE genre_id = ?";
+    private static final String SQL_GET_GENRE_BY_ID = "SELECT genre_id FROM genres WHERE " +
+            "genre_id = ?";
     private static final String SQL_GET_ALL_GENRES = "SELECT genre_id FROM genres";
 
     public GenreDao(JdbcTemplate jdbcTemplate) {
@@ -30,6 +31,7 @@ public class GenreDao {
 
     public Collection<Genre> getAllGenres() {
         log.debug("Запрошены все жанры.");
-        return jdbcTemplate.query(SQL_GET_ALL_GENRES, (rs, rowNum) -> new Genre(rs.getInt("genre_id")));
+        return jdbcTemplate.query(SQL_GET_ALL_GENRES, (rs, rowNum) ->
+                new Genre(rs.getInt("genre_id")));
     }
 }

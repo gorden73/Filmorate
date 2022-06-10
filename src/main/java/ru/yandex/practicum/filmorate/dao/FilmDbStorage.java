@@ -22,19 +22,23 @@ public class FilmDbStorage implements FilmStorage {
     private final LikesDao likesDao;
     private static final String SQL_GET_FILMS = "SELECT * FROM films";
     private static final String SQL_GET_LIKES = "SELECT user_id FROM likes WHERE film_id = ?";
-    private static final String SQL_GET_GENRES = "SELECT genre_id FROM film_genre WHERE film_id = ?";
-    private static final String SQL_ADD_FILM = "INSERT INTO films(name, description, release_date, duration, mpa) " +
-            "VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_GET_GENRES = "SELECT genre_id FROM film_genre WHERE " +
+            "film_id = ?";
+    private static final String SQL_ADD_FILM = "INSERT INTO films(name, description, release_date, " +
+            "duration, mpa) VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_GET_FILM_ID = "SELECT film_id FROM films WHERE name = ? AND " +
             "description = ? AND release_date = ? AND duration = ? AND mpa = ?";
-    private static final String SQL_ADD_GENRE = "INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)";
-    private static final String SQL_UPDATE_FILM = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
+    private static final String SQL_ADD_GENRE = "INSERT INTO film_genre(film_id, genre_id) " +
+            "VALUES (?, ?)";
+    private static final String SQL_UPDATE_FILM = "UPDATE films SET name = ?, description = ?, " +
+            "release_date = ?, " +
             "duration = ?, mpa = ? WHERE film_id = ?";
     private static final String SQL_DELETE_GENRE = "DELETE FROM film_genre WHERE film_id = ?";
-    private static final String SQL_UPDATE_GENRE = "INSERT INTO film_genre(film_id, genre_id) VALUES(?, ?)";
+    private static final String SQL_UPDATE_GENRE = "INSERT INTO film_genre(film_id, genre_id) " +
+            "VALUES(?, ?)";
     private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
-    private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l ON f.film_id = " +
-            "l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
+    private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l " +
+            "ON f.film_id = l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
@@ -65,28 +69,33 @@ public class FilmDbStorage implements FilmStorage {
         Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
                 (new Genre(rs2.getInt("genre_id"))), id));
         if (genres.isEmpty()) {
-            return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, null);
+            return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes,
+                    null);
         }
         return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
     }
 
     @Override
     public Film addFilm(Film film) {
-        jdbcTemplate.update(SQL_ADD_FILM, film.getName(), film.getDescription(), film.getReleaseDate(),
-                film.getDuration(), film.getMpa().getId());
+        jdbcTemplate.update(SQL_ADD_FILM, film.getName(), film.getDescription(),
+                film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         log.debug("Добавлен новый фильм {}.", film);
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(SQL_GET_FILM_ID, film.getName(),
-                film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
+                film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                film.getMpa().getId());
         if (filmRows.next()) {
             if (film.getGenres() == null) {
-                return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                        film.getReleaseDate(), film.getDuration(), film.getMpa(), new HashSet<>(), null);
+                return new Film(filmRows.getInt("film_id"), film.getName(),
+                        film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                        film.getMpa(), new HashSet<>(),null);
             } else {
                 for (Genre genre : film.getGenres()) {
-                    jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"), genre.getId());
+                    jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"),
+                            genre.getId());
                 }
-                return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                        film.getReleaseDate(), film.getDuration(), film.getMpa(), film.getGenres());
+                return new Film(filmRows.getInt("film_id"), film.getName(),
+                        film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                        film.getMpa(), film.getGenres());
             }
         }
         return film;
@@ -94,8 +103,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        jdbcTemplate.update(SQL_UPDATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(),
-                film.getDuration(), film.getMpa().getId(), film.getId());
+        jdbcTemplate.update(SQL_UPDATE_FILM, film.getName(), film.getDescription(),
+                film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
         log.debug("Обновлен фильм {}.", film.getId());
         if (film.getGenres() == null || film.getGenres().isEmpty()) {
             jdbcTemplate.update(SQL_DELETE_GENRE, film.getId());

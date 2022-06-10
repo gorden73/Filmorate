@@ -79,51 +79,62 @@ class UserControllerTest {
 
     @Test
     void shouldNotAddUserWhenEmailIsNotContainsSymbol() {
-        assertThrows(ValidationException.class, () -> controller.addUser(user2), "Email содержит символ @.");
-        assertFalse(controller.getAllUsers().contains(user2), "Пользователь добавлен в хранилище.");
+        assertThrows(ValidationException.class, () -> controller.addUser(user2), "Email" +
+                " содержит символ @.");
+        assertFalse(controller.getAllUsers().contains(user2), "Пользователь добавлен в" +
+                " хранилище.");
     }
 
     @Test
     void shouldNotAddUserWhenLoginIsEmpty() {
-        assertThrows(ValidationException.class, () -> controller.addUser(user3), "Логин не пустой.");
-        assertFalse(controller.getAllUsers().contains(user3), "Пользователь добавлен в хранилище.");
+        assertThrows(ValidationException.class, () -> controller.addUser(user3), "Логин" +
+                " не пустой.");
+        assertFalse(controller.getAllUsers().contains(user3), "Пользователь добавлен в" +
+                " хранилище.");
     }
 
     @Test
     void shouldNotAddUserWhenLoginContainsSpaces() {
-        assertThrows(ValidationException.class, () -> controller.addUser(user4), "Логин не содержит пробелы.");
+        assertThrows(ValidationException.class, () -> controller.addUser(user4), "Логин" +
+                " не содержит пробелы.");
         assertFalse(controller.getAllUsers().contains(user4), "Пользователь добавлен в хранилище.");
     }
 
     @Test
     void shouldAddUserWhenNameIsEmpty() {
         controller.addUser(user5);
-        assertTrue(controller.getAllUsers().contains(user5), "Пользователь не добавлен в хранилище.");
+        assertTrue(controller.getAllUsers().contains(user5), "Пользователь не добавлен" +
+                " в хранилище.");
         assertEquals(user5.getLogin(), user5.getName(), "Логин и имя различны.");
     }
 
     @Test
     void shouldAddUserWhenBirthdayIsBeforeNow() {
         controller.addUser(user6);
-        assertTrue(controller.getAllUsers().contains(user6), "Пользователь не добавлен в хранилище.");
+        assertTrue(controller.getAllUsers().contains(user6), "Пользователь не добавлен" +
+                " в хранилище.");
     }
 
     @Test
     void shouldAddUserWhenBirthdayIsEqualsNow() {
         controller.addUser(user7);
-        assertTrue(controller.getAllUsers().contains(user7), "Пользователь не добавлен в хранилище.");
+        assertTrue(controller.getAllUsers().contains(user7), "Пользователь не добавлен" +
+                " в хранилище.");
     }
 
     @Test
     void shouldNotAddUserWhenBirthdayIsAfterNow() {
-        assertThrows(ValidationException.class, () -> controller.addUser(user8), "Дата рождения не в будущем.");
-        assertFalse(controller.getAllUsers().contains(user8), "Пользователь добавлен в хранилище.");
+        assertThrows(ValidationException.class, () -> controller.addUser(user8), "Дата" +
+                " рождения не в будущем.");
+        assertFalse(controller.getAllUsers().contains(user8), "Пользователь добавлен" +
+                " в хранилище.");
     }
 
     @Test
     void shouldUpdateUserWhenDataIsValid() {
         controller.addUser(user);
-        assertEquals(1, controller.getAllUsers().size(), "Хранилище не должно быть пустым.");
+        assertEquals(1, controller.getAllUsers().size(), "Хранилище не должно" +
+                " быть пустым.");
         assertTrue(controller.getAllUsers().contains(user), "Фильм не добавлен в хранилище.");
         controller.updateUser(user6);
         assertEquals(1, controller.getAllUsers().size(), "Хранилище не должно быть пустым.");
@@ -146,7 +157,8 @@ class UserControllerTest {
     @Test
     void shouldNotUpdateUserWhenEmailIsNotContainsSymbol() {
         controller.addUser(user);
-        assertThrows(ValidationException.class, () -> controller.updateUser(user2), "Email содержит символ @.");
+        assertThrows(ValidationException.class, () -> controller.updateUser(user2), "Email" +
+                " содержит символ @.");
         assertNotEquals(user.getEmail(), user2.getEmail(), "Адреса email совпадают.");
         assertNotEquals(user.getLogin(), user2.getLogin(), "Логины совпадают.");
         assertNotEquals(user.getName(), user2.getName(), "Имена совпадают.");
@@ -156,7 +168,8 @@ class UserControllerTest {
     @Test
     void shouldNotUpdateUserWhenLoginIsEmpty() {
         controller.addUser(user);
-        assertThrows(ValidationException.class, () -> controller.updateUser(user3), "Логин не пустой.");
+        assertThrows(ValidationException.class, () -> controller.updateUser(user3), "Логин" +
+                " не пустой.");
         assertNotEquals(user.getEmail(), user3.getEmail(), "Адреса email совпадают.");
         assertNotEquals(user.getLogin(), user3.getLogin(), "Логины совпадают.");
         assertNotEquals(user.getName(), user3.getName(), "Имена совпадают.");
@@ -166,7 +179,8 @@ class UserControllerTest {
     @Test
     void shouldNotUpdateUserWhenLoginContainsSpace() {
         controller.addUser(user);
-        assertThrows(ValidationException.class, () -> controller.updateUser(user4), "Логин не содержит пробелы.");
+        assertThrows(ValidationException.class, () -> controller.updateUser(user4), "Логин" +
+                " не содержит пробелы.");
         assertNotEquals(user.getEmail(), user4.getEmail(), "Адреса email совпадают.");
         assertNotEquals(user.getLogin(), user4.getLogin(), "Логины совпадают.");
         assertNotEquals(user.getName(), user4.getName(), "Имена совпадают.");
@@ -176,7 +190,8 @@ class UserControllerTest {
     @Test
     void shouldUpdateUserWhenNameIsEmpty() {
         controller.addUser(user);
-        assertTrue(controller.getAllUsers().contains(user), "Пользователь не добавлен в хранилище.");
+        assertTrue(controller.getAllUsers().contains(user), "Пользователь не добавлен в" +
+                " хранилище.");
         controller.updateUser(user5);
         assertEquals(user.getLogin(), user.getName(), "Логин и имя различны.");
         assertEquals(user.getEmail(), user5.getEmail(), "Адреса email не совпадают.");
@@ -188,7 +203,8 @@ class UserControllerTest {
     @Test
     void shouldUpdateUserWhenBirthdayIsBeforeNow() {
         controller.addUser(user);
-        assertTrue(controller.getAllUsers().contains(user), "Пользователь не добавлен в хранилище.");
+        assertTrue(controller.getAllUsers().contains(user), "Пользователь не добавлен в" +
+                " хранилище.");
         controller.updateUser(user6);
         assertEquals(user.getEmail(), user6.getEmail(), "Адреса email не совпадают.");
         assertEquals(user.getLogin(), user6.getLogin(), "Логины не совпадают.");
@@ -199,7 +215,8 @@ class UserControllerTest {
     @Test
     void shouldUpdateUserWhenBirthdayIsEqualsNow() {
         controller.addUser(user);
-        assertTrue(controller.getAllUsers().contains(user), "Пользователь не добавлен в хранилище.");
+        assertTrue(controller.getAllUsers().contains(user), "Пользователь не добавлен в" +
+                " хранилище.");
         controller.updateUser(user7);
         assertEquals(user.getEmail(), user7.getEmail(), "Адреса email не совпадают.");
         assertEquals(user.getLogin(), user7.getLogin(), "Логины не совпадают.");
@@ -210,7 +227,8 @@ class UserControllerTest {
     @Test
     void shouldNotUpdateUserWhenBirthdayIsAfterNow() {
         controller.addUser(user);
-        assertThrows(ValidationException.class, () -> controller.updateUser(user8), "Дата рождения не в будущем.");
+        assertThrows(ValidationException.class, () -> controller.updateUser(user8), "Дата" +
+                " рождения не в будущем.");
         assertNotEquals(user.getEmail(), user8.getEmail(), "Адреса email совпадают.");
         assertNotEquals(user.getLogin(), user8.getLogin(), "Логины совпадают.");
         assertNotEquals(user.getName(), user8.getName(), "Имена совпадают.");

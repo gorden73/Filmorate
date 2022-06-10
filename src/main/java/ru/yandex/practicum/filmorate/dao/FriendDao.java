@@ -20,17 +20,22 @@ import java.util.List;
 @Slf4j
 public class FriendDao {
     private final JdbcTemplate jdbcTemplate;
-    private static final String SQL_ADD_TO_FRIENDS = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
-    private static final String SQL_CHANGE_STATUS = "UPDATE friends SET status = ? WHERE user_id = ? AND friend_id = ?";
+    private static final String SQL_ADD_TO_FRIENDS = "INSERT INTO friends(user_id, friend_id) " +
+            "VALUES (?, ?)";
+    private static final String SQL_CHANGE_STATUS = "UPDATE friends SET status = ? WHERE " +
+            "user_id = ? AND friend_id = ?";
     private static final String SQL_GET_USER_BY_ID = "SELECT * FROM users WHERE user_id = ?";
-    private static final String SQL_REMOVE_LIKE = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
-    private static final String SQL_CHECK_FRIEND = "SELECT friend_id FROM friends WHERE user_id = ? AND friend_id = ?";
-    private static final String SQL_GET_USER_FRIENDS = "SELECT f.friend_id, u.user_id, u.email, u.login, u.name, " +
-            "u.birthday FROM friends AS f INNER JOIN users AS u ON f.friend_id = u.user_id  WHERE f.user_id = ? " +
-            "GROUP BY f.friend_id";
-    private static final String SQL_GET_MUTUAL_FRIENDS = "SELECT f.friend_id, u.user_id, u.email, u.login, u.name, " +
-            "u.birthday FROM friends AS f LEFT JOIN friends AS fr ON f.friend_id = fr.friend_id INNER JOIN users AS u " +
-            "ON f.friend_id = u.user_id WHERE f.user_id = ? AND fr.user_id = ? GROUP BY f.friend_id";
+    private static final String SQL_REMOVE_LIKE = "DELETE FROM friends WHERE user_id = ? AND " +
+            "friend_id = ?";
+    private static final String SQL_CHECK_FRIEND = "SELECT friend_id FROM friends WHERE " +
+            "user_id = ? AND friend_id = ?";
+    private static final String SQL_GET_USER_FRIENDS = "SELECT f.friend_id, u.user_id, u.email, " +
+            "u.login, u.name, u.birthday FROM friends AS f INNER JOIN users AS u ON " +
+            "f.friend_id = u.user_id  WHERE f.user_id = ? GROUP BY f.friend_id";
+    private static final String SQL_GET_MUTUAL_FRIENDS = "SELECT f.friend_id, u.user_id, u.email," +
+            " u.login, u.name, u.birthday FROM friends AS f LEFT JOIN friends AS fr ON " +
+            "f.friend_id = fr.friend_id INNER JOIN users AS u ON f.friend_id = u.user_id WHERE " +
+            "f.user_id = ? AND fr.user_id = ? GROUP BY f.friend_id";
     private static final String SQL_GET_FRIENDS = "SELECT friend_id FROM friends WHERE user_id = ?";
     private static final String SQL_GET_FRIENDS_STATUS = "SELECT * FROM friends WHERE user_id = ?";
     private static final String SQL_GET_LIKED_FILMS = "SELECT film_id FROM likes WHERE user_id = ?";
@@ -72,8 +77,8 @@ public class FriendDao {
     }
 
     private boolean checkFriend(Integer id, Integer friendId) {
-        List<Integer> friends = jdbcTemplate.query(SQL_CHECK_FRIEND, (rs, rowNum) -> rs.getInt("friend_id"),
-                friendId, id);
+        List<Integer> friends = jdbcTemplate.query(SQL_CHECK_FRIEND, (rs, rowNum) ->
+                        rs.getInt("friend_id"), friendId, id);
         if (friends.contains(id)) {
             return true;
         }
@@ -101,7 +106,8 @@ public class FriendDao {
         HashMap<Integer, Boolean> friendStatus = new HashMap<>();
         SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(SQL_GET_FRIENDS_STATUS, id);
         if (friendsRows.next()) {
-            friendStatus.put(friendsRows.getInt("friend_id"), friendsRows.getBoolean("status"));
+            friendStatus.put(friendsRows.getInt("friend_id"),
+                    friendsRows.getBoolean("status"));
         }
         HashSet<Integer> likedFilms = new HashSet<>(jdbcTemplate.query(SQL_GET_LIKED_FILMS,
                 (rs3, rowNum) -> (rs3.getInt("film_id")), id));
