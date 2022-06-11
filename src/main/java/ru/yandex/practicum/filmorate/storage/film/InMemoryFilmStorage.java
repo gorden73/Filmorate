@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,15 +59,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.get(id);
     }
 
-    public Collection<Film> getPopularFilms(Integer count) {
-        if (count > 0 && count < films.size()) {
-            return films.values().stream()
-                    .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
-                    .limit(count).collect(Collectors.toList());
-        }
-        return films.values().stream()
-                .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
-                .limit(films.size()).collect(Collectors.toList());
+    @Override
+    public Collection<Film> getPopularFilms(Integer genreId, Integer year) {
+        return null;
     }
 
     public Integer addLike(Integer filmId, Integer userId) {
@@ -76,6 +72,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Integer removeLike(Integer filmId, Integer userId) {
         films.get(filmId).getLikes().remove(userId);
         return userId;
+    }
+
+    @Override
+    public Collection<Film> getPopularFilms() {
+        return null;
     }
 
     public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {

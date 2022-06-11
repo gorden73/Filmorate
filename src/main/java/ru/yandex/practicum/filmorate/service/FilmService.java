@@ -149,8 +149,13 @@ public class FilmService {
         return filmStorage.removeLike(filmId, userId);
     }
 
-    public Collection<Film> getPopularFilms(Integer count) {
-        return filmStorage.getPopularFilms(count);
+    public Collection<Film> getPopularFilms(Integer genreId, Integer year,
+                                             Integer count, Integer from) {
+        return filmStorage.getPopularFilms(genreId, year)
+                .stream()
+                .skip(from)
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     public Film getFilm(Integer id) {

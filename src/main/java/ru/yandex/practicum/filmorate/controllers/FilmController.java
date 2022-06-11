@@ -1,12 +1,15 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.constraints.Min;
 import java.util.Collection;
 
+@Slf4j
 @RequestMapping("/films")
 @RestController
 public class FilmController {
@@ -48,8 +51,18 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count) {
-        return filmService.getPopularFilms(count);
+    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count,
+                                            @RequestParam(defaultValue = "0") Integer page,
+                                            @RequestParam(required = false) Integer genreId,
+                                            @RequestParam(required = false) Integer year) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("count");
+        }
+        if (page < 0) {
+            throw new IllegalArgumentException("page");
+        }
+        Integer from = page * count;
+        return filmService.getPopularFilms(genreId, year, count, from);
     }
 
     @GetMapping("/{id}")
