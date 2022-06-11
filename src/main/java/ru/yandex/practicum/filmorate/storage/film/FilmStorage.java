@@ -23,4 +23,6 @@ public interface FilmStorage {
     Integer removeLike(Integer filmId, Integer userId);
 
     Collection<Film> getRecommendations(Integer userId);
+
+    Collection<Film> getFilmsByDirector(Integer directorId, String sortBy);
 }
