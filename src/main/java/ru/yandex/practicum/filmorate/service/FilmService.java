@@ -11,20 +11,20 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final DirectorService directorService;
     private static final LocalDate MOVIE_BIRTHDAY = LocalDate.of(1895, 12, 28);
 
-
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, DirectorService directorService) {
         this.filmStorage = filmStorage;
+        this.directorService = directorService;
     }
 
     private boolean checkValidData(Film film) {
@@ -76,6 +76,8 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
+        final Integer directorId = film.getDirector().get(0).getId();
+        directorService.findDirectorById(directorId);
         if (checkAddValidData(film)) {
             return filmStorage.addFilm(film);
         }
@@ -83,6 +85,8 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
+        final Integer directorId = film.getDirector().get(0).getId();
+        directorService.findDirectorById(directorId);
         if (checkUpdateValidData(film) && checkAddValidData(film)) {
             return filmStorage.updateFilm(film);
         }
@@ -131,8 +135,10 @@ public class FilmService {
 
     public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy,
                                                Integer from, Integer count) {
-        //TODO: после merge тут нужно добавить проверку на наличие директора
-        return filmStorage.getFilmsByDirector(directorId, sortBy, count)
+        directorService.findDirectorById(directorId);
+        int sort = 4;
+        if (sortBy.equals("likes")) sort = 8;
+        return filmStorage.getFilmsByDirector(directorId, sort)
                 .stream()
                 .skip(from)
                 .limit(count)
