@@ -45,7 +45,6 @@ public class DirectorService {
 
     public void removeDirector(Integer id) {
         findDirectorById(id);
-        log.info(String.format("Удален директор c ID %s", id));
         storage.delete(id);
     }
 }
