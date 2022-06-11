@@ -82,7 +82,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy, Integer count) {
+    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy) {
         return null;
     }
 }
