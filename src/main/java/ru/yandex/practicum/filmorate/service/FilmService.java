@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -126,5 +127,15 @@ public class FilmService {
 
     public Collection<Film> getRecommendations(Integer userId) {
         return filmStorage.getRecommendations(userId);
+    }
+
+    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy,
+                                               Integer from, Integer count) {
+        //TODO: после merge тут нужно добавить проверку на наличие директора
+        return filmStorage.getFilmsByDirector(directorId, sortBy, count)
+                .stream()
+                .skip(from)
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }
