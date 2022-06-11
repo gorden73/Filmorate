@@ -35,6 +35,19 @@ public class FilmDbStorage implements FilmStorage {
     private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
     private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l ON f.film_id = " +
             "l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
+    private static final String SQL_COMMON_FILMS = "SELECT l.film_id, f.name, description, " +
+            "   release_date, duration, mpa " +
+            "    FROM likes AS l " +
+            "    JOIN films AS f ON f.film_id = l.film_id " +
+            "    JOIN mpa AS m ON f.mpa = m.id " +
+            "    LEFT JOIN film_genre AS fg ON l.film_id = fg.film_id " +
+            "    LEFT JOIN genres AS g ON g.genre_id = fg.genre_id " +
+            "    WHERE l.film_id IN ( " +
+            "        SELECT film_id FROM likes WHERE user_id = ? " +
+            "        INTERSECT " +
+            "        SELECT film_id FROM likes WHERE user_id = ? ) " +
+            "GROUP BY l.film_id " +
+            "ORDER BY COUNT(DISTINCT likes_id) DESC";
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
@@ -148,19 +161,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count) {
-        final String sql = "SELECT l.film_id, f.name, description, release_date, duration, mpa " +
-                "    FROM likes AS l " +
-                "    JOIN films AS f ON f.film_id = l.film_id " +
-                "    JOIN mpa AS m ON f.mpa = m.id " +
-                "    LEFT JOIN film_genre AS fg ON l.film_id = fg.film_id " +
-                "    LEFT JOIN genres AS g ON g.genre_id = fg.genre_id " +
-                "    WHERE l.film_id IN ( " +
-                "        SELECT film_id FROM likes WHERE user_id = ? " +
-                "        INTERSECT\n" +
-                "        SELECT film_id FROM likes WHERE user_id = ? ) " +
-                "GROUP BY l.film_id " +
-                "ORDER BY COUNT(DISTINCT likes_id) DESC;";
-        return jdbcTemplate.query(sql,
+        return jdbcTemplate.query(SQL_COMMON_FILMS,
                 (rs, rowNum) -> makeFilm(rs), userId, friendId);
 
     }
