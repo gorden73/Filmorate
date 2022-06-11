@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -23,6 +24,7 @@ public class Film {
     private Set<Integer> likes;
     private Mpa mpa;
     private Set<Genre> genres;
+    private List<Director> directors;
 
     public Film() {
         super();
@@ -60,7 +62,7 @@ public class Film {
     }
 
     public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
-                Set<Integer> likes, Set<Genre> genres) {
+                Set<Integer> likes, Set<Genre> genres, List<Director> directors) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -69,6 +71,7 @@ public class Film {
         this.mpa = mpa;
         this.likes = likes;
         this.genres = genres;
+        this.directors = directors;
     }
 
     public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
@@ -94,4 +97,5 @@ public class Film {
         this.likes = new HashSet<>();
         this.genres = genres;
     }
+
 }
