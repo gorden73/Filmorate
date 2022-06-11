@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.LikesDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -20,11 +19,13 @@ import java.util.Map;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
-
+    private final FilmService filmService;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       FilmService filmService) {
         this.userStorage = userStorage;
+        this.filmService = filmService;
     }
 
     private boolean checkValidData(User user) {
@@ -136,7 +137,7 @@ public class UserService {
 
     public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
         if(userStorage.getUser(userId) != null) {
-            return userStorage.getRecommendations(userId, from, size);
+            return filmService.getRecommendations(userId, from, size);
         } else {
             log.error("Не найден пользователь {}.", userId);
             throw new ElementNotFoundException(String.format("пользователь %d", userId));

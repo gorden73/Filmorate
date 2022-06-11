@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -75,5 +76,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Integer removeLike(Integer filmId, Integer userId) {
         films.get(filmId).getLikes().remove(userId);
         return userId;
+    }
+
+    public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
+        return List.of();
     }
 }

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -118,9 +117,5 @@ public class UserDbStorage implements UserStorage {
 
     public User getUser(Integer id) {
         return jdbcTemplate.query(SQL_GET_USER_BY_ID, (rs, rowNum) -> makeUser(rs), id).get(0);
-    }
-
-    public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
-        return likesDao.getRecommendations(userId, from, size);
     }
 }
