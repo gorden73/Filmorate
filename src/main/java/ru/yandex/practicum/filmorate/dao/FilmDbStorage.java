@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -20,6 +21,7 @@ import java.util.*;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final LikesDao likesDao;
+    private final DirectorDao directorDao;
     private static final String SQL_GET_FILMS = "SELECT * FROM films";
     private static final String SQL_GET_LIKES = "SELECT user_id FROM likes WHERE film_id = ?";
     private static final String SQL_GET_GENRES = "SELECT genre_id FROM film_genre WHERE film_id = ?";
@@ -35,11 +37,25 @@ public class FilmDbStorage implements FilmStorage {
     private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
     private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l ON f.film_id = " +
             "l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
+    private static final String SQL_GET_FILMS_BY_DIRECTOR = "SELECT f.film_id, f.name, f.description, " +
+            "       f.release_date AS year, f.duration, f.mpa, d.id, COUNT(l.likes_id) AS likes FROM films AS f " +
+            "       JOIN film_director AS fd ON fd.film_id = f.film_id " +
+            "       JOIN directors AS d ON d.id = fd.director_id " +
+            "       LEFT JOIN likes AS l ON l.film_id = f.film_id " +
+            "WHERE d.id = ? " +
+            "GROUP BY f.film_id " +
+            "ORDER BY ? DESC";
+    private static final String SQL_ADD_DIRECTOR = "INSERT INTO film_director(director_id, film_id)" +
+            " VALUES (?, ?)";
+    private static final String SQL_GET_TOP_FILMS = "SELECT f.film_id, f.name, f.description, f.release_date, " +
+            "f.duration, f.mpa, l.user_id FROM likes AS l RIGHT JOIN films AS f ON f.film_id = l.film_id " +
+            "GROUP BY f.film_id, l.user_id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao, DirectorDao directorDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.likesDao = likesDao;
+        this.directorDao = directorDao;
     }
 
     @Override
@@ -64,29 +80,33 @@ public class FilmDbStorage implements FilmStorage {
                 (rs1.getInt("user_id")), id));
         Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
                 (new Genre(rs2.getInt("genre_id"))), id));
+        List<Director> directors = directorDao.getAllDirectorsById(id);
         if (genres.isEmpty()) {
-            return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, null);
+            return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, null, directors);
         }
-        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
+        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres, directors);
     }
 
     @Override
     public Film addFilm(Film film) {
         jdbcTemplate.update(SQL_ADD_FILM, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId());
-        log.debug("Добавлен новый фильм {}.", film);
+        log.info("Добавлен новый фильм {}.", film.getName());
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(SQL_GET_FILM_ID, film.getName(),
                 film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         if (filmRows.next()) {
+            jdbcTemplate.update(SQL_ADD_DIRECTOR, filmRows.getInt("film_id"),
+                    film.getDirector().get(0).getId());
             if (film.getGenres() == null) {
                 return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                        film.getReleaseDate(), film.getDuration(), film.getMpa(), new HashSet<>(), null);
+                        film.getReleaseDate(), film.getDuration(), film.getMpa(),
+                        new HashSet<>(), null, film.getDirector());
             } else {
                 for (Genre genre : film.getGenres()) {
                     jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"), genre.getId());
                 }
                 return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                        film.getReleaseDate(), film.getDuration(), film.getMpa(), film.getGenres());
+                        film.getReleaseDate(), film.getDuration(), film.getMpa(), film.getGenres(), film.getDirector());
             }
         }
         return film;
@@ -127,7 +147,11 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Collection<Film> getPopularFilms(Integer count) {
         log.debug("Запрошены {} популярных фильмов.", count);
-        return likesDao.getPopularFilms(count);
+        Collection<Film> films = jdbcTemplate.query(SQL_GET_TOP_FILMS, (rs, rowNum) -> makeFilm(rs), count);
+        if (films.isEmpty()) {
+            return jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs), count);
+        }
+        return films;
     }
 
     @Override
@@ -146,4 +170,11 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getRecommendations(Integer userId) {
         return null;
     }
+
+    @Override
+    public Collection<Film> getFilmsByDirector(Integer directorId, Integer sort) {
+        return jdbcTemplate.query(SQL_GET_FILMS_BY_DIRECTOR,
+                (rs, rowNum) -> makeFilm(rs), directorId, sort);
+    }
+
 }
