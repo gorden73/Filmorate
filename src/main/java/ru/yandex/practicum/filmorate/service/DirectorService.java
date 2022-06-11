@@ -21,7 +21,7 @@ public class DirectorService {
     }
 
     public Optional<Director> createDirector(Director director) {
-        log.info(String.format("Добавлен пользователь %s", director));
+        log.info(String.format("Добавлен директор %s", director));
         return storage.create(director);
     }
 
