@@ -45,8 +45,8 @@ public class FilmDbStorage implements FilmStorage {
             "WHERE d.id = ? " +
             "GROUP BY f.film_id " +
             "ORDER BY ? DESC";
-    private static final String SQL_ADD_DIRECTOR = "INSERT INTO film_director(director_id, film_id)" +
-            " VALUES (?, ?)";
+    private static final String SQL_ADD_DIRECTOR = "MERGE INTO film_director (director_id, film_id) " +
+            "KEY (director_id, film_id) VALUES (?, ?)";
     private static final String SQL_GET_TOP_FILMS = "SELECT f.film_id, f.name, f.description, f.release_date, " +
             "f.duration, f.mpa, l.user_id FROM likes AS l RIGHT JOIN films AS f ON f.film_id = l.film_id " +
             "GROUP BY f.film_id, l.user_id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
