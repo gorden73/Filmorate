@@ -135,12 +135,9 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(SQL_UPDATE_FILM, film.getName(), film.getDescription(),
                 film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
         log.debug("Обновлен фильм {}.", film.getId());
+        jdbcTemplate.update(SQL_DELETE_GENRE, film.getId());
         if (film.getGenres() == null || film.getGenres().isEmpty()) {
-            jdbcTemplate.update(SQL_DELETE_GENRE, film.getId());
             return film;
-        }
-        for (Genre genre : film.getGenres()) {
-            jdbcTemplate.update(SQL_DELETE_GENRE, film.getId());
         }
         for (Genre genre : film.getGenres()) {
             jdbcTemplate.update(SQL_UPDATE_GENRE, film.getId(), genre.getId());
@@ -199,6 +196,5 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count) {
         return jdbcTemplate.query(SQL_COMMON_FILMS,
                 (rs, rowNum) -> makeFilm(rs), userId, friendId);
-
     }
 }

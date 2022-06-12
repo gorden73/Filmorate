@@ -113,9 +113,10 @@ public class ReviewDao {
         return getReviewById(newReview.getReviewId());
     }
 
-    public void deleteReviewById(Integer id) {
+    public Integer deleteReviewById(Integer id) {
         jdbcTemplate.update(DELETE_REVIEW_BY_ID_QUERY, id);
         log.debug("Удален отзыв {}.", id);
+        return id;
     }
 
     private Review mapRowToReview(ResultSet resultSet, int rowNum) throws SQLException {
@@ -125,6 +126,6 @@ public class ReviewDao {
         String content = resultSet.getString("content");
         boolean isPositive = resultSet.getBoolean("is_positive");
         int useful = resultSet.getInt("useful");
-        return new Review(id, userId, filmId, content, isPositive, useful);
+        return new Review(id, content, isPositive, userId, filmId, useful);
     }
 }

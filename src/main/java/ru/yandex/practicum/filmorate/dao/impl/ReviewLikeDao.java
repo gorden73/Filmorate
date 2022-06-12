@@ -23,18 +23,21 @@ public class ReviewLikeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addLike(Integer userId, Integer reviewId) {
+    public Integer addLike(Integer userId, Integer reviewId) {
         jdbcTemplate.update(ADD_LIKE_QUERY, userId, reviewId);
         log.debug("Пользователь {} поставил like отзыву {}.", userId, reviewId);
+        return reviewId;
     }
 
-    public void addDislike(Integer userId, Integer reviewId) {
+    public Integer addDislike(Integer userId, Integer reviewId) {
         jdbcTemplate.update(ADD_DISLIKE_QUERY, userId, reviewId);
         log.debug("Пользователь {} поставил dislike отзыву {}.", userId, reviewId);
+        return reviewId;
     }
 
-    public void delete(Integer userId, Integer reviewId) {
+    public Integer delete(Integer userId, Integer reviewId) {
         jdbcTemplate.update(DELETE_QUERY, userId, reviewId);
         log.debug("Пользователь {} удалил свой like отзыву {}.", userId, reviewId);
+        return reviewId;
     }
 }

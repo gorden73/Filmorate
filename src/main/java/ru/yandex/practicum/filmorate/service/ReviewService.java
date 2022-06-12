@@ -52,31 +52,31 @@ public class ReviewService {
         return reviewDao.updateReview(newReview);
     }
 
-    public void deleteReviewById(Integer id) {
-        reviewDao.deleteReviewById(id);
+    public Integer deleteReviewById(Integer id) {
+        return reviewDao.deleteReviewById(id);
     }
 
-    public void addLike(Integer userId, Integer reviewId) {
+    public Integer addLike(Integer userId, Integer reviewId) {
         getReviewById(reviewId);
         userService.findUserById(userId);
-        reviewLikeDao.addLike(userId, reviewId);
+        return reviewLikeDao.addLike(userId, reviewId);
     }
 
-    public void addDislike(Integer userId, Integer reviewId) {
+    public Integer addDislike(Integer userId, Integer reviewId) {
         getReviewById(reviewId);
         userService.findUserById(userId);
-        reviewLikeDao.addDislike(userId, reviewId);
+        return reviewLikeDao.addDislike(userId, reviewId);
     }
 
-    public void deleteLike(Integer userId, Integer reviewId) {
+    public Integer deleteLike(Integer userId, Integer reviewId) {
         getReviewById(reviewId);
         userService.findUserById(userId);
-        reviewLikeDao.delete(userId, reviewId);
+        return reviewLikeDao.delete(userId, reviewId);
     }
 
-    public void deleteDislike(Integer userId, Integer reviewId) {
+    public Integer deleteDislike(Integer userId, Integer reviewId) {
         getReviewById(reviewId);
         userService.findUserById(userId);
-        reviewLikeDao.delete(userId, reviewId);
+        return reviewLikeDao.delete(userId, reviewId);
     }
 }

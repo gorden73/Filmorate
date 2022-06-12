@@ -26,7 +26,7 @@ public class FriendDaoImpl implements FriendDao {
     private static final String SQL_CHANGE_STATUS = "UPDATE friends SET status = ? WHERE " +
             "user_id = ? AND friend_id = ?";
     private static final String SQL_GET_USER_BY_ID = "SELECT * FROM users WHERE user_id = ?";
-    private static final String SQL_REMOVE_LIKE = "DELETE FROM friends WHERE user_id = ? AND " +
+    private static final String SQL_REMOVE_FRIEND = "DELETE FROM friends WHERE user_id = ? AND " +
             "friend_id = ?";
     private static final String SQL_CHECK_FRIEND = "SELECT friend_id FROM friends WHERE " +
             "user_id = ? AND friend_id = ?";
@@ -63,13 +63,11 @@ public class FriendDaoImpl implements FriendDao {
     }
 
     public Integer removeFromFriends(Integer id, Integer friendId) {
-        if (checkFriend(id, friendId)) {
-            throw new ElementNotFoundException("пользователь " + id);
-        }
         if (!checkFriend(friendId, id)) {
-            throw new ElementNotFoundException("пользователь " + friendId);
+            throw new ElementNotFoundException(String.format("пользователь %d и %d в друзьях друг" +
+                    " у друга.", id, friendId));
         }
-        jdbcTemplate.update(SQL_REMOVE_LIKE, id, friendId);
+        jdbcTemplate.update(SQL_REMOVE_FRIEND, id, friendId);
         if (checkFriend(id, friendId)) {
             jdbcTemplate.update(SQL_CHANGE_STATUS, false, friendId, id);
         }
