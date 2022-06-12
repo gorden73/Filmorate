@@ -152,11 +152,9 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getPopularFilms(Integer count) {
         Collection<Film> films = jdbcTemplate.query(SQL_GET_TOP_FILMS, (rs, rowNum) -> makeFilm(rs),
                 count);
-        if (films.isEmpty()) {
-            return jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs));
-        }
         log.debug("Запрошено {} популярных фильмов.", count);
-        return films;
+        return films.isEmpty() ? jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs))
+                : films;
     }
 
     @Override
