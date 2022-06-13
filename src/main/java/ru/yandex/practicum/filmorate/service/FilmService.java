@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorage;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -23,15 +25,22 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
+    private FeedDbStorage feedDbStorage;
     private final DirectorService directorService;
     private static final LocalDate MOVIE_BIRTHDAY = LocalDate.of(1895, 12, 28);
     private final UserService userService;
 
-
-    @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        DirectorService directorService, UserService userService) {
         this.filmStorage = filmStorage;
+        this.directorService = directorService;
+        this.userService = userService;
+    }
+    @Autowired
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       DirectorService directorService, UserService userService, FeedDbStorage feedDbStorage) {
+        this.filmStorage = filmStorage;
+        this.feedDbStorage = feedDbStorage;
         this.directorService = directorService;
         this.userService = userService;
     }
@@ -135,6 +144,10 @@ public class FilmService {
         if (!films.containsKey(filmId)) {
             throw new ElementNotFoundException("фильм " + filmId);
         }
+        if (films.get(filmId).getLikes().contains(userId)) {
+            throw new ValidationException("повторный лайк");
+        }
+        feedDbStorage.addFeed(new Feed(userId, "LIKE", "ADD", filmId));
         return filmStorage.addLike(filmId, userId);
     }
 
@@ -143,10 +156,12 @@ public class FilmService {
         if (!films.containsKey(filmId)) {
             throw new ElementNotFoundException("фильм " + filmId);
         }
-        if (!getFilm(filmId).getLikes().contains(userId)) {
+        if (!films.get(filmId).getLikes().contains(userId)) {
+            log.info("не найден лайк пользователя");
             throw new ElementNotFoundException("лайк пользователя " + userId);
         }
         films.get(filmId).getLikes().remove(userId);
+        feedDbStorage.addFeed(new Feed(userId, "LIKE", "REMOVE", filmId));
         return filmStorage.removeLike(filmId, userId);
     }
 
