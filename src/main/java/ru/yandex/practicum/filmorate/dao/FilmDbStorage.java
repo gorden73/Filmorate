@@ -80,7 +80,7 @@ public class FilmDbStorage implements FilmStorage {
                 (rs1.getInt("user_id")), id));
         Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
                 (new Genre(rs2.getInt("genre_id"))), id));
-        List<Director> directors = directorDao.getAllDirectorsById(id);
+        Set<Director> directors = new HashSet<>(directorDao.getAllDirectorsById(id));
         if (genres.isEmpty()) {
             return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, null, directors);
         }
@@ -95,7 +95,7 @@ public class FilmDbStorage implements FilmStorage {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(SQL_GET_FILM_ID, film.getName(),
                 film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         if (filmRows.next()) {
-            jdbcTemplate.update(SQL_ADD_DIRECTOR, film.getDirector().get(0).getId(),
+            jdbcTemplate.update(SQL_ADD_DIRECTOR, film.getDirector().stream().findAny().get().getId(),
                     filmRows.getInt("film_id"));
             if (film.getGenres() == null) {
                 return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),

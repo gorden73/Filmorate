@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.dao;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface DirectorDao {
 
@@ -12,7 +12,7 @@ public interface DirectorDao {
 
     Collection<Director> getAllDirectors();
 
-    List<Director> getAllDirectorsById(Integer filmId);
+    Collection<Director> getAllDirectorsById(Integer filmId);
 
     Optional<Director> getDirector(Integer id);
 

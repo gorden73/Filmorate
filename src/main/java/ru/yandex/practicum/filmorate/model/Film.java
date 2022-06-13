@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,7 +23,7 @@ public class Film {
     private Set<Integer> likes;
     private Mpa mpa;
     private Set<Genre> genres;
-    private List<Director> director = new ArrayList<>();
+    private Set<Director> director = new HashSet<>();
 
     public Film() {
         super();
@@ -63,7 +61,7 @@ public class Film {
     }
 
     public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
-                Set<Integer> likes, Set<Genre> genres, List<Director> director) {
+                Set<Integer> likes, Set<Genre> genres, Set<Director> director) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -76,7 +74,7 @@ public class Film {
     }
 
     public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
-                Set<Genre> genres, List<Director> director) {
+                Set<Genre> genres, Set<Director> director) {
         this.id = id;
         this.name = name;
         this.description = description;

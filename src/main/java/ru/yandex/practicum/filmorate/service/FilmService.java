@@ -76,7 +76,7 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
-        final Integer directorId = film.getDirector().get(0).getId();
+        final Integer directorId = film.getDirector().stream().findAny().get().getId();
         directorService.findDirectorById(directorId);
         if (checkAddValidData(film)) {
             return filmStorage.addFilm(film);
@@ -85,7 +85,7 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
-        final Integer directorId = film.getDirector().get(0).getId();
+        final Integer directorId = film.getDirector().stream().findAny().get().getId();
         directorService.findDirectorById(directorId);
         if (checkUpdateValidData(film) && checkAddValidData(film)) {
             return filmStorage.updateFilm(film);

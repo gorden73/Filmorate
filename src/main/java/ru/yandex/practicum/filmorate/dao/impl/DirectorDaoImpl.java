@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 @Slf4j
@@ -58,7 +59,7 @@ public class DirectorDaoImpl implements DirectorDao {
     }
 
     @Override
-    public List<Director> getAllDirectorsById(Integer filmId) {
+    public Collection<Director> getAllDirectorsById(Integer filmId) {
         return jdbcTemplate.query(SQL_SELECT_BY_FILM, (rs, rowNum) -> makeDirector(rs), filmId);
     }
 
