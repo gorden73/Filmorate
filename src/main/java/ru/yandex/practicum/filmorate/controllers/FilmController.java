@@ -56,4 +56,22 @@ public class FilmController {
     public Film getFilm(@PathVariable Integer id) {
         return filmService.getFilm(id);
     }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getFilmsByDirector(@PathVariable Integer directorId,
+                                               @RequestParam(defaultValue = "year") String sortBy,
+                                               @RequestParam(defaultValue = "10") Integer count,
+                                               @RequestParam(defaultValue = "0") Integer page) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("count");
+        }
+        if (page < 0) {
+            throw new IllegalArgumentException("page");
+        }
+        if (!(sortBy.equals("year") || sortBy.equals("likes"))) {
+            throw new IllegalArgumentException("sortBy");
+        }
+        Integer from = count * page;
+        return filmService.getFilmsByDirector(directorId, sortBy, from, count);
+    }
 }
