@@ -45,8 +45,8 @@ public class DirectorService {
         return storage.getDirector(id);
     }
 
-    public void removeDirector(Integer id) {
+    public Integer removeDirector(Integer id) {
         findDirectorById(id);
-        storage.delete(id);
+        return storage.delete(id);
     }
 }

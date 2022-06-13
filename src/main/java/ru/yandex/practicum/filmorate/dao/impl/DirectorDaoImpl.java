@@ -92,8 +92,10 @@ public class DirectorDaoImpl implements DirectorDao {
     }
 
     @Override
-    public void delete(Integer id) {
+    public Integer delete(Integer id) {
         jdbcTemplate.update(SQL_DELETE, id);
+        log.info("Удален режиссер: {}", id);
+        return id;
     }
 
     private Director makeDirector(ResultSet rs) throws SQLException {

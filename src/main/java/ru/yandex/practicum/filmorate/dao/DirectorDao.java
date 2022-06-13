@@ -18,5 +18,5 @@ public interface DirectorDao {
 
     Optional<Director> update(Director entity);
 
-    void delete(Integer id);
+    Integer delete(Integer id);
 }
