@@ -136,7 +136,8 @@ public class FilmService {
         return filmStorage.getRecommendations(userId);
     }
 
-    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy, Integer from, Integer count) {
+    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy,
+                                               Integer from, Integer count) {
         directorService.findDirectorById(directorId);
         if (sortBy.equals("likes")) {
             return filmStorage.getFilmsByDirectorByLikes(directorId)
