@@ -4,7 +4,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 
 public interface DirectorDao {
 
@@ -16,7 +15,10 @@ public interface DirectorDao {
 
     Optional<Director> getDirector(Integer id);
 
+    Integer addDirector(Integer directorId, Integer filmId);
+
     Optional<Director> update(Director entity);
 
     Integer delete(Integer id);
+
 }

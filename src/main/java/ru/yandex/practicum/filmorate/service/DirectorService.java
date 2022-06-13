@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
@@ -21,7 +22,7 @@ public class DirectorService {
     }
 
     public Optional<Director> createDirector(Director director) {
-        log.info(String.format("Добавлен режиссер %s", director));
+        log.info(String.format("Создан режиссер %s", director));
         return storage.create(director);
     }
 
@@ -33,7 +34,13 @@ public class DirectorService {
 
     public Collection<Director> getAllDirectors() {
         Collection<Director> directorList = storage.getAllDirectors();
-        log.info(String.format("Количество режиссеров %s", directorList.size()));
+        log.info(String.format("Количество режиссеров %d", directorList.size()));
+        return directorList;
+    }
+
+    public Collection<Director> getAllDirectorsById(Integer id) {
+        Collection<Director> directorList = storage.getAllDirectorsById(id);
+        log.info(String.format("Количество режиссеров %d у фильма %d", directorList.size(), id));
         return directorList;
     }
 
@@ -49,5 +56,9 @@ public class DirectorService {
         findDirectorById(id);
         log.info("Удален режиссер: {}", id);
         return storage.delete(id);
+    }
+
+    public Integer addDirector(Integer directorId, Integer filmId) {
+        return storage.addDirector(directorId, filmId);
     }
 }

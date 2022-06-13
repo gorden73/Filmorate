@@ -24,6 +24,7 @@ import java.util.Set;
 @Slf4j
 public class DirectorDaoImpl implements DirectorDao {
 
+    private final JdbcTemplate jdbcTemplate;
     private static final String SQL_CREATE = "INSERT INTO directors (name) VALUES (?)";
     private static final String SQL_SELECT_ALL = "SELECT id, name, FROM directors";
     private static final String SQL_SELECT_BY_FILM = "SELECT d.id, d.name, FROM directors AS d " +
@@ -33,7 +34,8 @@ public class DirectorDaoImpl implements DirectorDao {
                                         "FROM directors WHERE id = ?";
     private static final String SQL_UPDATE = "UPDATE directors SET name = ? WHERE id = ?";
     private static final String SQL_DELETE = "DELETE FROM directors WHERE id = ?";
-    private final JdbcTemplate jdbcTemplate;
+    private static final String SQL_ADD_DIRECTOR = "MERGE INTO film_director (director_id, film_id) " +
+            " VALUES (?, ?)";
 
     @Autowired
     public DirectorDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -97,6 +99,11 @@ public class DirectorDaoImpl implements DirectorDao {
     public Integer delete(Integer id) {
         jdbcTemplate.update(SQL_DELETE, id);
         return id;
+    }
+
+    @Override
+    public Integer addDirector(Integer directorId, Integer filmId) {
+        return jdbcTemplate.update(SQL_ADD_DIRECTOR, directorId, filmId);
     }
 
     private Director makeDirector(ResultSet rs) throws SQLException {

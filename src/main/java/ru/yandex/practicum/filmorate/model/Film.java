@@ -23,7 +23,7 @@ public class Film {
     private Set<Integer> likes;
     private Mpa mpa;
     private Set<Genre> genres;
-    private Set<Director> director = new HashSet<>();
+    private Set<Director> director;
 
     public Film() {
         super();

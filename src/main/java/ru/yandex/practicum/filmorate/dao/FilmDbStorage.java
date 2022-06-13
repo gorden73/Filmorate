@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.sql.ResultSet;
@@ -45,8 +46,6 @@ public class FilmDbStorage implements FilmStorage {
             "WHERE d.id = ? " +
             "GROUP BY f.film_id " +
             "ORDER BY ? DESC";
-    private static final String SQL_ADD_DIRECTOR = "MERGE INTO film_director (director_id, film_id) " +
-            " VALUES (?, ?)";
     private static final String SQL_GET_TOP_FILMS = "SELECT f.film_id, f.name, f.description, f.release_date, " +
             "f.duration, f.mpa, l.user_id FROM likes AS l RIGHT JOIN films AS f ON f.film_id = l.film_id " +
             "GROUP BY f.film_id, l.user_id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
@@ -95,18 +94,20 @@ public class FilmDbStorage implements FilmStorage {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(SQL_GET_FILM_ID, film.getName(),
                 film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         if (filmRows.next()) {
-            jdbcTemplate.update(SQL_ADD_DIRECTOR, film.getDirector().stream().findAny().get().getId(),
+            directorDao.addDirector(film.getDirector().stream().findAny().get().getId(),
                     filmRows.getInt("film_id"));
+            Set<Director> directors = new HashSet<>(directorDao
+                    .getAllDirectorsById(filmRows.getInt("film_id")));
             if (film.getGenres() == null) {
                 return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
                         film.getReleaseDate(), film.getDuration(), film.getMpa(),
-                        new HashSet<>(), null, film.getDirector());
+                        new HashSet<>(), null, directors);
             } else {
                 for (Genre genre : film.getGenres()) {
                     jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"), genre.getId());
                 }
                 return new Film(filmRows.getInt("film_id"), film.getName(), film.getDescription(),
-                        film.getReleaseDate(), film.getDuration(), film.getMpa(), film.getGenres(), film.getDirector());
+                        film.getReleaseDate(), film.getDuration(), film.getMpa(), film.getGenres(), directors);
             }
         }
         return film;

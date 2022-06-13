@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
@@ -76,20 +77,22 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
-        final Integer directorId = film.getDirector().stream().findAny().get().getId();
-        directorService.findDirectorById(directorId);
         if (checkAddValidData(film)) {
-            return filmStorage.addFilm(film);
+            final Integer directorId = film.getDirector().stream().findAny().get().getId();
+            final Optional<Director> optionalDirector = directorService.findDirectorById(directorId);
+            final Film createdFilm = filmStorage.addFilm(film);
+            optionalDirector.ifPresent(director ->
+                    directorService.addDirector(director.getId(), createdFilm.getId()));
+            return createdFilm;
         }
         return film;
     }
 
     public Film updateFilm(Film film) {
-        final Integer directorId = film.getDirector().stream().findAny().get().getId();
-        directorService.findDirectorById(directorId);
         if (checkUpdateValidData(film) && checkAddValidData(film)) {
             return filmStorage.updateFilm(film);
         }
+
         return film;
     }
 
