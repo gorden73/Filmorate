@@ -73,10 +73,13 @@ public class FilmController {
         if (page < 0) {
             throw new IllegalArgumentException("page");
         }
-        if (!(sortBy.equals("year") || sortBy.equals("likes"))) {
-            throw new IllegalArgumentException("sortBy");
-        }
         Integer from = count * page;
-        return filmService.getFilmsByDirector(directorId, sortBy, from, count);
+        if (sortBy.equals("year")) {
+            return filmService.getFilmsByDirectorByYear(directorId, from, count);
+        }
+        if (sortBy.equals("likes")) {
+            return filmService.getFilmsByDirectorByLikes(directorId, from, count);
+        }
+        throw new IllegalArgumentException("sortBy");
     }
 }

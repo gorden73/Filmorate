@@ -38,14 +38,22 @@ public class FilmDbStorage implements FilmStorage {
     private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
     private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l ON f.film_id = " +
             "l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
-    private static final String SQL_GET_FILMS_BY_DIRECTOR = "SELECT f.film_id, f.name, f.description, " +
+    private static final String SQL_GET_FILMS_BY_YEAR = "SELECT f.film_id, f.name, f.description, " +
             "       f.release_date AS year, f.duration, f.mpa, d.id, COUNT(l.likes_id) AS likes FROM films AS f " +
             "       JOIN film_director AS fd ON fd.film_id = f.film_id " +
             "       JOIN directors AS d ON d.id = fd.director_id " +
             "       LEFT JOIN likes AS l ON l.film_id = f.film_id " +
             "WHERE d.id = ? " +
             "GROUP BY f.film_id " +
-            "ORDER BY ? DESC";
+            "ORDER BY year DESC";
+    private static final String SQL_GET_FILMS_BY_LIKES = "SELECT f.film_id, f.name, f.description, " +
+            "       f.release_date, f.duration, f.mpa, d.id, COUNT(l.likes_id) AS likes FROM films AS f " +
+            "       JOIN film_director AS fd ON fd.film_id = f.film_id " +
+            "       JOIN directors AS d ON d.id = fd.director_id " +
+            "       LEFT JOIN likes AS l ON l.film_id = f.film_id " +
+            "WHERE d.id = ? " +
+            "GROUP BY f.film_id " +
+            "ORDER BY likes DESC";
     private static final String SQL_GET_TOP_FILMS = "SELECT f.film_id, f.name, f.description, f.release_date, " +
             "f.duration, f.mpa, l.user_id FROM likes AS l RIGHT JOIN films AS f ON f.film_id = l.film_id " +
             "GROUP BY f.film_id, l.user_id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
@@ -173,9 +181,14 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getFilmsByDirector(Integer directorId, Integer sort) {
-        return jdbcTemplate.query(SQL_GET_FILMS_BY_DIRECTOR,
-                (rs, rowNum) -> makeFilm(rs), directorId, sort);
+    public Collection<Film> getFilmsByDirectorByYear(Integer directorId) {
+        return jdbcTemplate.query(SQL_GET_FILMS_BY_YEAR,
+                (rs, rowNum) -> makeFilm(rs), directorId);
     }
 
+    @Override
+    public Collection<Film> getFilmsByDirectorByLikes(Integer directorId) {
+        return jdbcTemplate.query(SQL_GET_FILMS_BY_LIKES,
+                (rs, rowNum) -> makeFilm(rs), directorId);
+    }
 }
