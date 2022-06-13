@@ -23,6 +23,7 @@ public class Film {
     private Set<Integer> likes;
     private Mpa mpa;
     private Set<Genre> genres;
+    private Set<Director> director;
 
     public Film() {
         super();
@@ -61,7 +62,8 @@ public class Film {
     }
 
     public Film(Integer id, String name, String description, LocalDate releaseDate,
-                Integer duration, Mpa mpa, Set<Integer> likes, Set<Genre> genres) {
+                Integer duration, Mpa mpa, Set<Integer> likes, Set<Genre> genres,
+                Set<Director> director) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -70,6 +72,7 @@ public class Film {
         this.mpa = mpa;
         this.likes = likes;
         this.genres = genres;
+        this.director = director;
     }
 
     public Film(Integer id, String name, String description, LocalDate releaseDate,

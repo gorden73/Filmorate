@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
@@ -21,12 +23,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final DirectorService directorService;
     private static final LocalDate MOVIE_BIRTHDAY = LocalDate.of(1895, 12, 28);
     private final UserService userService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService) {
+    @Autowired
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                DirectorService directorService, UserService userService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
+        this.directorService = directorService;
     }
 
     private boolean checkValidData(Film film) {
@@ -87,14 +93,38 @@ public class FilmService {
 
     public Film addFilm(Film film) {
         if (checkAddValidData(film)) {
-            return filmStorage.addFilm(film);
+            final Film createdFilm = filmStorage.addFilm(film);
+            Optional<Director> optionalDirector = Optional.empty();
+            if (film.getDirector() != null) {
+                optionalDirector = film.getDirector().stream().findAny();
+            }
+            Optional<Director> optFoundedDirector;
+            if (optionalDirector.isPresent()) {
+                optFoundedDirector = directorService.findDirectorById(optionalDirector
+                        .get().getId());
+                optFoundedDirector.ifPresent(director ->
+                        directorService.addFilmDirector(director.getId(), createdFilm.getId()));
+            }
+            return filmStorage.getFilm(createdFilm.getId());
         }
         return film;
     }
 
     public Film updateFilm(Film film) {
         if (checkUpdateValidData(film) && checkAddValidData(film)) {
-            return filmStorage.updateFilm(film);
+            final Film updatedFilm = filmStorage.updateFilm(film);
+            Optional<Director> optionalDirector = Optional.empty();
+            if (film.getDirector() != null) {
+                optionalDirector = film.getDirector().stream().findAny();
+            }
+            Optional<Director> optFoundedDirector;
+            if (optionalDirector.isPresent()) {
+                optFoundedDirector = directorService.findDirectorById(optionalDirector
+                        .get().getId());
+                optFoundedDirector.ifPresent(director ->
+                        directorService.addFilmDirector(director.getId(), updatedFilm.getId()));
+            }
+            return updatedFilm;
         }
         return film;
     }
@@ -137,6 +167,23 @@ public class FilmService {
 
     public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
         return filmStorage.getRecommendations(userId, from, size);
+    }
+
+    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy,
+                                               Integer from, Integer count) {
+        directorService.findDirectorById(directorId);
+        if (sortBy.equals("likes")) {
+            return filmStorage.getFilmsByDirectorByLikes(directorId)
+                    .stream()
+                    .skip(from)
+                    .limit(count)
+                    .collect(Collectors.toList());
+        }
+        return filmStorage.getFilmsByDirectorByYear(directorId)
+                .stream()
+                .skip(from)
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId,

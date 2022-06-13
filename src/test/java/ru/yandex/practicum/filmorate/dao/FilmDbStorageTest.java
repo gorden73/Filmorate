@@ -101,7 +101,7 @@ class FilmDbStorageTest {
     void shouldUpdateFilmWhenFilmHasNotGenres() {
         Film updateFilm = new Film(1, "updateName", "updateDescription",
                 LocalDate.of(2000, 12, 12), 100, new Mpa(4),
-                new HashSet<>(), null);
+                new HashSet<>(), null, new HashSet<>());
         filmDbStorage.updateFilm(updateFilm);
         assertThat(updateFilm).isEqualTo(filmDbStorage.getAllFilms().get(1));
     }
@@ -111,7 +111,8 @@ class FilmDbStorageTest {
         filmDbStorage.addFilm(film1);
         Film updateFilm = new Film(2, "updateName", "updateDescription",
                 LocalDate.of(2000, 12, 12), 100, new Mpa(4),
-                new HashSet<>(), new HashSet<>(List.of(new Genre(3), new Genre(4))));
+                new HashSet<>(), new HashSet<>(List.of(new Genre(3), new Genre(4))),
+                new HashSet<>());
         filmDbStorage.updateFilm(updateFilm);
         assertThat(updateFilm).isEqualTo(filmDbStorage.getAllFilms().get(2));
     }
@@ -129,7 +130,7 @@ class FilmDbStorageTest {
         assertThat(filmDbStorage.getFilm(1)).isEqualTo(new Film(1, "The Rock",
                 "Starring Nicolas Cage and Sean Connery",
                 LocalDate.of(1996, 6, 7), 136, new Mpa(1),
-                new HashSet<>(), null));
+                new HashSet<>(), null, new HashSet<>()));
     }
 
     @Test
@@ -140,9 +141,10 @@ class FilmDbStorageTest {
         filmDbStorage.addFilm(film);
         likesDao.addLike(2, 1);
         assertThat(filmDbStorage.getPopularFilms(2)).isEqualTo(List.of(new Film(2, "The Rock1",
-                "Starring Nicolas Cage and Sean Connery1", LocalDate.of(1995, 6, 7),
-                137, new Mpa(2), new HashSet<>(List.of(1)), null), new Film(1, "The Rock",
-                "Starring Nicolas Cage and Sean Connery", LocalDate.of(1996, 6, 7),
-                136, new Mpa(1), null)));
+                        "Starring Nicolas Cage and Sean Connery1", LocalDate.of(1995, 6, 7),
+                        137, new Mpa(2), new HashSet<>(List.of(1)), null, new HashSet<>()),
+                new Film(1, "The Rock", "Starring Nicolas Cage and Sean Connery",
+                        LocalDate.of(1996, 6, 7), 136, new Mpa(1),
+                        new HashSet<>(), null, new HashSet<>())));
     }
 }

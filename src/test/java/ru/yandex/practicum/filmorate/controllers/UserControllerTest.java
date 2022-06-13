@@ -2,10 +2,17 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.dao.DirectorDao;
+import ru.yandex.practicum.filmorate.dao.impl.FilmDbStorage;
+import ru.yandex.practicum.filmorate.dao.impl.DirectorDaoImpl;
+import ru.yandex.practicum.filmorate.dao.impl.LikesDaoImpl;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -30,8 +37,11 @@ class UserControllerTest {
     @BeforeEach
     public void start() {
         UserStorage userStorage = new InMemoryUserStorage();
-        controller = new UserController(new UserService(userStorage),
-                new FilmService(new InMemoryFilmStorage(), new UserService(userStorage)));
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        DirectorDao directorDao = new DirectorDaoImpl(new JdbcTemplate());
+        FilmService filmService = new FilmService(filmStorage, new DirectorService(directorDao),
+                new UserService(userStorage));
+        controller = new UserController(new UserService(userStorage), filmService);
         createUsersForTests();
     }
 
