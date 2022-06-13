@@ -8,22 +8,24 @@ import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final DirectorService directorService;
     private static final LocalDate MOVIE_BIRTHDAY = LocalDate.of(1895, 12, 28);
 
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, DirectorService directorService) {
         this.filmStorage = filmStorage;
+        this.directorService = directorService;
     }
 
     private boolean checkValidData(Film film) {
@@ -134,5 +136,22 @@ public class FilmService {
 
     public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
         return filmStorage.getRecommendations(userId, from, size);
+    }
+
+    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy,
+                                               Integer from, Integer count) {
+        directorService.findDirectorById(directorId);
+        if (sortBy.equals("likes")) {
+            return filmStorage.getFilmsByDirectorByLikes(directorId)
+                    .stream()
+                    .skip(from)
+                    .limit(count)
+                    .collect(Collectors.toList());
+        }
+        return filmStorage.getFilmsByDirectorByYear(directorId)
+                .stream()
+                .skip(from)
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }
