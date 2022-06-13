@@ -28,8 +28,7 @@ public class DirectorDaoImpl implements DirectorDao {
     private static final String SQL_SELECT_ALL = "SELECT id, name, FROM directors";
     private static final String SQL_SELECT_BY_FILM = "SELECT d.id, d.name, FROM directors AS d " +
             "JOIN film_director AS fd ON fd.director_id = d.id " +
-            "JOIN films AS f ON f.film_id = fd.film_id " +
-            "WHERE f.film_id = ?";
+            "WHERE fd.film_id = ?";
     private static final String SQL_SELECT_ONE = "SELECT id, name " +
                                         "FROM directors WHERE id = ?";
     private static final String SQL_UPDATE = "UPDATE directors SET name = ? WHERE id = ?";
