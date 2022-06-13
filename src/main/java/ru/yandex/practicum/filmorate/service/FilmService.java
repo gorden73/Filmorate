@@ -136,12 +136,16 @@ public class FilmService {
         return filmStorage.getRecommendations(userId);
     }
 
-    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy,
-                                               Integer from, Integer count) {
+    public Collection<Film> getFilmsByDirector(Integer directorId, String sortBy, Integer from, Integer count) {
         directorService.findDirectorById(directorId);
-        int sort = 4;
-        if (sortBy.equals("likes")) sort = 8;
-        return filmStorage.getFilmsByDirector(directorId, sort)
+        if (sortBy.equals("likes")) {
+            return filmStorage.getFilmsByDirectorByLikes(directorId)
+                    .stream()
+                    .skip(from)
+                    .limit(count)
+                    .collect(Collectors.toList());
+        }
+        return filmStorage.getFilmsByDirectorByYear(directorId)
                 .stream()
                 .skip(from)
                 .limit(count)
