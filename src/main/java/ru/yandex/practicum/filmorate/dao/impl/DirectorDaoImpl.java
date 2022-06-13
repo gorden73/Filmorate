@@ -50,7 +50,9 @@ public class DirectorDaoImpl implements DirectorDao {
             stmt.setString(1, entity.getName());
             return stmt;
         }, keyHolder);
-        return getDirector(keyHolder.getKey().intValue());
+        Optional<Director> optionalDirector = getDirector(keyHolder.getKey().intValue());
+        optionalDirector.ifPresent(director -> log.info("Обновлен режиссер: {}", director));
+        return optionalDirector;
     }
 
     @Override
@@ -86,6 +88,7 @@ public class DirectorDaoImpl implements DirectorDao {
                 entity.getId(),
                 entity.getName());
         if (count == 1) {
+            log.info("Обновлен режиссер: {}", director);
             return Optional.of(director);
         }
         return Optional.empty();
@@ -94,7 +97,6 @@ public class DirectorDaoImpl implements DirectorDao {
     @Override
     public Integer delete(Integer id) {
         jdbcTemplate.update(SQL_DELETE, id);
-        log.info("Удален режиссер: {}", id);
         return id;
     }
 

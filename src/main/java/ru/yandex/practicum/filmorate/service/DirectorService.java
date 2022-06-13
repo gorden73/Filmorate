@@ -47,6 +47,7 @@ public class DirectorService {
 
     public Integer removeDirector(Integer id) {
         findDirectorById(id);
+        log.info("Удален режиссер: {}", id);
         return storage.delete(id);
     }
 }
