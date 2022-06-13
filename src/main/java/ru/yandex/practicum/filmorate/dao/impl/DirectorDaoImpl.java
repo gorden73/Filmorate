@@ -69,7 +69,7 @@ public class DirectorDaoImpl implements DirectorDao {
                 .stream()
                 .findFirst();
         if (optionalDirector.isEmpty()) {
-            throw new ElementNotFoundException(String.format("Режиссер c ID %s не найден", id));
+            throw new ElementNotFoundException(String.format("Режиссер c ID %d не найден", id));
         }
         final Director director = optionalDirector.get();
         log.info("Найден режиссер: {} {}", director.getId(), director.getName());
