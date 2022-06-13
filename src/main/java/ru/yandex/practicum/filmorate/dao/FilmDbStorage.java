@@ -38,10 +38,9 @@ public class FilmDbStorage implements FilmStorage {
     private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l ON f.film_id = " +
             "l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
     private static final String SQL_GET_FILMS_BY_YEAR = "SELECT f.film_id, f.name, f.description, " +
-            "       f.release_date AS year, f.duration, f.mpa, d.id, COUNT(l.likes_id) AS likes FROM films AS f " +
+            "       f.release_date AS year, f.duration, f.mpa, d.id FROM films AS f " +
             "       JOIN film_director AS fd ON fd.film_id = f.film_id " +
             "       JOIN directors AS d ON d.id = fd.director_id " +
-            "       LEFT JOIN likes AS l ON l.film_id = f.film_id " +
             "WHERE d.id = ? " +
             "GROUP BY f.film_id " +
             "ORDER BY year DESC";
