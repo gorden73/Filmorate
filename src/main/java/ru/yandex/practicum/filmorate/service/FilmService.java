@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,14 +88,24 @@ public class FilmService {
 
     public Film addFilm(Film film) {
         if (checkAddValidData(film)) {
-            return filmStorage.addFilm(film);
+            final Integer directorId = film.getDirector().stream().findAny().get().getId();
+            final Optional<Director> optionalDirector = directorService.findDirectorById(directorId);
+            final Film createdFilm = filmStorage.addFilm(film);
+            optionalDirector.ifPresent(director ->
+                    directorService.addFilmDirector(director.getId(), createdFilm.getId()));
+            return filmStorage.getFilm(createdFilm.getId());
         }
         return film;
     }
 
     public Film updateFilm(Film film) {
         if (checkUpdateValidData(film) && checkAddValidData(film)) {
-            return filmStorage.updateFilm(film);
+            final Integer directorId = film.getDirector().stream().findAny().get().getId();
+            final Optional<Director> optionalDirector = directorService.findDirectorById(directorId);
+            final Film updatedFilm = filmStorage.updateFilm(film);
+            optionalDirector.ifPresent(director ->
+                    directorService.addFilmDirector(director.getId(), updatedFilm.getId()));
+            return filmStorage.getFilm(updatedFilm.getId());
         }
         return film;
     }
