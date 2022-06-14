@@ -23,4 +23,8 @@ public interface FilmStorage {
     Integer removeLike(Integer filmId, Integer userId);
 
     Collection<Film> getRecommendations(Integer userId, Integer from, Integer size);
+
+    Collection<Film> getFilmsByDirectorByYear(Integer directorId);
+
+    Collection<Film> getFilmsByDirectorByLikes(Integer directorId);
 }
