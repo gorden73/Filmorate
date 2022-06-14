@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final LikesDao likesDao;
+    private final DirectorDao directorDao;
     private static final String SQL_GET_FILMS = "SELECT film_id, name, description, release_date," +
             " duration, mpa  FROM films";
     private static final String SQL_GET_LIKES = "SELECT user_id FROM likes WHERE film_id = ?";
@@ -71,9 +73,10 @@ public class FilmDbStorage implements FilmStorage {
             "ORDER BY likes DESC";
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao, DirectorDao directorDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.likesDao = likesDao;
+        this.directorDao = directorDao;
     }
 
     @Override
@@ -98,11 +101,12 @@ public class FilmDbStorage implements FilmStorage {
                 (rs1.getInt("user_id")), id));
         Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
                 (new Genre(rs2.getInt("genre_id"))), id));
+        Set<Director> directors = new HashSet<>(directorDao.getAllDirectorsById(id));
         if (genres.isEmpty()) {
             return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes,
-                    null);
+                    null, directors);
         }
-        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
+        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres, directors);
     }
 
     @Override
@@ -117,7 +121,7 @@ public class FilmDbStorage implements FilmStorage {
             if (film.getGenres() == null) {
                 return new Film(filmRows.getInt("film_id"), film.getName(),
                         film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                        film.getMpa(), new HashSet<>(),null);
+                        film.getMpa(), new HashSet<>(), null, null);
             } else {
                 for (Genre genre : film.getGenres()) {
                     jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"),
