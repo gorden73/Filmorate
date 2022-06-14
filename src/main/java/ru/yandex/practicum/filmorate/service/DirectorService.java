@@ -21,13 +21,13 @@ public class DirectorService {
     }
 
     public Optional<Director> createDirector(Director director) {
-        log.info(String.format("Создан режиссер %s", director));
+        log.info(String.format("Создан режиссер %s", director.getName()));
         return storage.create(director);
     }
 
     public Optional<Director> updateDirector(Director director) {
         findDirectorById(director.getId());
-        log.info(String.format("Обновлен режиссер %s", director));
+        log.info(String.format("Обновлен режиссер %s", director.getName()));
         return storage.update(director);
     }
 
