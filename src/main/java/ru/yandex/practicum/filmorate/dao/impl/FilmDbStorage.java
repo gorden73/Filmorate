@@ -1,10 +1,11 @@
-package ru.yandex.practicum.filmorate.dao;
+package ru.yandex.practicum.filmorate.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.LikesDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -40,6 +41,19 @@ public class FilmDbStorage implements FilmStorage {
     private static final String SQL_UPDATE_GENRE = "INSERT INTO film_genre(film_id, genre_id) " +
             "VALUES(?, ?)";
     private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
+    private static final String SQL_COMMON_FILMS = "SELECT l.film_id, f.name, description, " +
+            "   release_date, duration, mpa " +
+            "    FROM likes AS l " +
+            "    JOIN films AS f ON f.film_id = l.film_id " +
+            "    JOIN mpa AS m ON f.mpa = m.id " +
+            "    LEFT JOIN film_genre AS fg ON l.film_id = fg.film_id " +
+            "    LEFT JOIN genres AS g ON g.genre_id = fg.genre_id " +
+            "    WHERE l.film_id IN ( " +
+            "        SELECT film_id FROM likes WHERE user_id = ? " +
+            "        INTERSECT " +
+            "        SELECT film_id FROM likes WHERE user_id = ? ) " +
+            "GROUP BY l.film_id " +
+            "ORDER BY COUNT(DISTINCT likes_id) DESC";
     private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l " +
             "ON f.film_id = l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
     private static final String SQL_GET_TOP_FILMS = "SELECT f.film_id, f.name, f.description, " +
@@ -102,7 +116,7 @@ public class FilmDbStorage implements FilmStorage {
             if (film.getGenres() == null) {
                 return new Film(filmRows.getInt("film_id"), film.getName(),
                         film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                        film.getMpa(), new HashSet<>(),null);
+                        film.getMpa(), new HashSet<>(), null);
             } else {
                 for (Genre genre : film.getGenres()) {
                     jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"),
@@ -169,7 +183,9 @@ public class FilmDbStorage implements FilmStorage {
 
     public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
         Collection<Film> films = jdbcTemplate.query(SQL_GET_RECOMMENDATION_FILM, (rs, rowNum) ->
-                        makeFilm(rs), userId, userId, userId).stream().skip(from).limit(size)
+                        makeFilm(rs), userId, userId, userId).stream()
+                .skip(from)
+                .limit(size)
                 .collect(Collectors.toList());
         if (films.isEmpty()) {
             throw new ElementNotFoundException("фильм/фильмы, рекомендованные к просмотру. " +
@@ -178,5 +194,10 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("Запрошены рекомендации фильмов пользователю {} в размере {} результатов.",
                 userId, size);
         return films;
+    }
+
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count) {
+        return jdbcTemplate.query(SQL_COMMON_FILMS,
+                (rs, rowNum) -> makeFilm(rs), userId, friendId);
     }
 }
