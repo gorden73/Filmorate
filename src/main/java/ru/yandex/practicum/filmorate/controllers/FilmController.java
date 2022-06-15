@@ -56,4 +56,19 @@ public class FilmController {
     public Film getFilm(@PathVariable Integer id) {
         return filmService.getFilm(id);
     }
+
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam Integer userId,
+                                           @RequestParam Integer friendId,
+                                           @RequestParam(defaultValue = "0") Integer page,
+                                           @RequestParam(defaultValue = "10") Integer count) {
+        if (page < 0) {
+            throw new IllegalArgumentException("page");
+        }
+        if (count <= 0) {
+            throw new IllegalArgumentException("count");
+        }
+        Integer from = count * page;
+        return filmService.getCommonFilms(userId, friendId, count, from);
+    }
 }

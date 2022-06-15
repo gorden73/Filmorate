@@ -5,20 +5,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Optional;
 
 @RequestMapping("/users")
 @RestController
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final FilmService filmService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FilmService filmService) {
         this.userService = userService;
+        this.filmService = filmService;
     }
 
     @GetMapping
@@ -27,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Integer id) {
-        return userService.getUser(id);
+    public Optional<User> getUser(@PathVariable Integer id) {
+        return userService.findUserById(id);
     }
 
     @PostMapping
@@ -81,6 +85,7 @@ public class UserController {
                     "результатов %d.", size));
         }
         Integer from = page * size;
-        return userService.getRecommendations(id, from, size);
+        userService.findUserById(id);
+        return filmService.getRecommendations(id, from, size);
     }
 }
