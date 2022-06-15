@@ -83,6 +83,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getFilmsByDirectorByYear(Integer directorId) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> getFilmsByDirectorByLikes(Integer directorId) {
+        return null;
+    }
+
+    @Override
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count) {
         return null;
     }

@@ -24,5 +24,9 @@ public interface FilmStorage {
 
     Collection<Film> getRecommendations(Integer userId, Integer from, Integer size);
 
+    Collection<Film> getFilmsByDirectorByYear(Integer directorId);
+
+    Collection<Film> getFilmsByDirectorByLikes(Integer directorId);
+
     Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count);
 }

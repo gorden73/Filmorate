@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.LikesDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final LikesDao likesDao;
+    private final DirectorDao directorDao;
     private static final String SQL_GET_FILMS = "SELECT film_id, name, description, release_date," +
             " duration, mpa  FROM films";
     private static final String SQL_GET_LIKES = "SELECT user_id FROM likes WHERE film_id = ?";
@@ -68,11 +71,27 @@ public class FilmDbStorage implements FilmStorage {
             "film_id ) GROUP BY user_id ORDER BY count DESC) GROUP BY user_id ORDER BY " +
             "COUNT(film_id) DESC LIMIT 1) AND film_id NOT IN (SELECT film_id FROM likes WHERE " +
             "user_id = ?))";
+    private static final String SQL_GET_FILMS_BY_YEAR = "SELECT f.film_id, f.name, f.description, " +
+            "       f.release_date AS year, f.duration, f.mpa, d.id FROM films AS f " +
+            "       JOIN film_director AS fd ON fd.film_id = f.film_id " +
+            "       JOIN directors AS d ON d.id = fd.director_id " +
+            "WHERE d.id = ? " +
+            "GROUP BY f.film_id " +
+            "ORDER BY year DESC";
+    private static final String SQL_GET_FILMS_BY_LIKES = "SELECT f.film_id, f.name, f.description, " +
+            "       f.release_date, f.duration, f.mpa, d.id, COUNT(l.likes_id) AS likes FROM films AS f " +
+            "       JOIN film_director AS fd ON fd.film_id = f.film_id " +
+            "       JOIN directors AS d ON d.id = fd.director_id " +
+            "       LEFT JOIN likes AS l ON l.film_id = f.film_id " +
+            "WHERE d.id = ? " +
+            "GROUP BY f.film_id " +
+            "ORDER BY likes DESC";
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao, DirectorDao directorDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.likesDao = likesDao;
+        this.directorDao = directorDao;
     }
 
     @Override
@@ -97,11 +116,12 @@ public class FilmDbStorage implements FilmStorage {
                 (rs1.getInt("user_id")), id));
         Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
                 (new Genre(rs2.getInt("genre_id"))), id));
+        Set<Director> directors = new HashSet<>(directorDao.getAllDirectorsById(id));
         if (genres.isEmpty()) {
             return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes,
-                    null);
+                    null, directors);
         }
-        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
+        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres, directors);
     }
 
     @Override
@@ -116,7 +136,7 @@ public class FilmDbStorage implements FilmStorage {
             if (film.getGenres() == null) {
                 return new Film(filmRows.getInt("film_id"), film.getName(),
                         film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                        film.getMpa(), new HashSet<>(), null);
+                        film.getMpa(), new HashSet<>(), null, null);
             } else {
                 for (Genre genre : film.getGenres()) {
                     jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"),
@@ -194,6 +214,18 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("Запрошены рекомендации фильмов пользователю {} в размере {} результатов.",
                 userId, size);
         return films;
+    }
+
+    @Override
+    public Collection<Film> getFilmsByDirectorByYear(Integer directorId) {
+        return jdbcTemplate.query(SQL_GET_FILMS_BY_YEAR,
+                (rs, rowNum) -> makeFilm(rs), directorId);
+    }
+
+    @Override
+    public Collection<Film> getFilmsByDirectorByLikes(Integer directorId) {
+        return jdbcTemplate.query(SQL_GET_FILMS_BY_LIKES,
+                (rs, rowNum) -> makeFilm(rs), directorId);
     }
 
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count) {
