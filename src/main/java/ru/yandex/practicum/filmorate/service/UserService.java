@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorage;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -18,10 +20,17 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private FeedDbStorage feedDbStorage;
 
-    @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
+    }
+
+    @Autowired
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       FeedDbStorage feedDbStorage) {
+        this.userStorage = userStorage;
+        this.feedDbStorage = feedDbStorage;
     }
 
     private boolean checkValidData(User user) {
@@ -84,6 +93,10 @@ public class UserService {
             log.error("Не найден пользователь {}.", friendId);
             throw new ElementNotFoundException("пользователь " + friendId);
         }
+        if (userStorage.getUserById(id).get().getFriends().contains(friendId)) {
+            throw new ValidationException("пользователь уже добавил " + friendId + " в друзья");
+        }
+        feedDbStorage.addFeed(new Feed(id, "FRIEND", "ADD", friendId));
         return userStorage.addToFriends(id, friendId);
     }
 
@@ -96,7 +109,9 @@ public class UserService {
             log.error("Не найден пользователь {}.", removeFromId);
             throw new ElementNotFoundException("пользователь " + removeFromId);
         }
-        return userStorage.removeFromFriends(id, removeFromId);
+        Integer remove = userStorage.removeFromFriends(id, removeFromId);
+        feedDbStorage.addFeed(new Feed(id, "FRIEND", "REMOVE", removeFromId));
+        return remove;
     }
 
     public Collection<User> getUserFriends(Integer id) {

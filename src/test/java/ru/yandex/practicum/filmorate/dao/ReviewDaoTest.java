@@ -32,8 +32,8 @@ public class ReviewDaoTest {
     private final ReviewLikeDao reviewLikeDao;
     private final UserDbStorage userDbStorage;
     private final FilmDbStorage filmDbStorage;
-    private Review review1 = new Review(null, "Great", true, 1, 1, 0);
-    private Review review2 = new Review(null, "Great", true, 1, 2, 0);
+    private Review review1 = new Review("Great", true, 1, 1, 0);
+    private Review review2 = new Review("Great", true, 1, 2, 0);
     private Review reviewUPD = new Review(1, "Terrible", false, 1, 1, 0);
     private User user = new User("test@mail.ru", "test", "Test", LocalDate.of(2000, 1, 1));
     private Film film = new Film("Test", "Test", LocalDate.of(2000, 1, 1), 90, new Mpa(1));
@@ -58,7 +58,7 @@ public class ReviewDaoTest {
         assertEquals(1, review.getUserId());
         assertEquals(1, review.getFilmId());
         assertEquals("Great", review.getContent());
-        assertTrue(review.getIsPositive());
+        assertTrue(review.isPositive());
         assertEquals(0, review.getUseful());
     }
 
@@ -87,7 +87,7 @@ public class ReviewDaoTest {
         assertEquals(1, usefulReview.getUserId());
         assertEquals(2, usefulReview.getFilmId());
         assertEquals("Great", usefulReview.getContent());
-        assertTrue(usefulReview.getIsPositive());
+        assertTrue(usefulReview.isPositive());
         assertEquals(1, usefulReview.getUseful());
     }
 
@@ -99,7 +99,7 @@ public class ReviewDaoTest {
         assertEquals(1, review.getUserId());
         assertEquals(1, review.getFilmId());
         assertEquals("Great", review.getContent());
-        assertTrue(review.getIsPositive());
+        assertTrue(review.isPositive());
         assertEquals(0, review.getUseful());
     }
 
@@ -109,6 +109,6 @@ public class ReviewDaoTest {
         reviewDao.updateReview(reviewUPD);
         Review review = reviewDao.getReviewById(1);
         assertEquals("Terrible", review.getContent());
-        assertFalse(review.getIsPositive());
+        assertFalse(review.isPositive());
     }
 }

@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorage;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.dao.impl.ReviewDao;
 import ru.yandex.practicum.filmorate.dao.impl.ReviewLikeDao;
@@ -17,14 +19,16 @@ public class ReviewService {
     private final ReviewLikeDao reviewLikeDao;
     private final UserService userService;
     private final FilmService filmService;
+    private final FeedDbStorage feedDbStorage;
 
     @Autowired
     public ReviewService(ReviewDao reviewDao, ReviewLikeDao reviewLikeDao,
-                         UserService userService, FilmService filmService) {
+                         UserService userService, FilmService filmService, FeedDbStorage feedDbStorage) {
         this.reviewDao = reviewDao;
         this.reviewLikeDao = reviewLikeDao;
         this.userService = userService;
         this.filmService = filmService;
+        this.feedDbStorage = feedDbStorage;
     }
 
     public Collection<Review> getReviews(Integer filmId, Integer count) {
@@ -45,16 +49,20 @@ public class ReviewService {
             throw new ValidationException("При создании отзыва был передан id. " +
                                           "Идентификатор назначается автоматически.");
         }
-        return reviewDao.addReview(review);
+        Review newReview = reviewDao.addReview(review);
+        feedDbStorage.addFeed(new Feed(review.getUserId(), "REVIEW", "ADD", newReview.getId()));
+        return newReview;
     }
 
     public Review updateReview(Review newReview) {
         getReviewById(newReview.getId());
+        feedDbStorage.addFeed(new Feed(newReview.getUserId(), "REVIEW", "UPDATE", newReview.getId()));
         return reviewDao.updateReview(newReview);
     }
 
     public Integer deleteReviewById(Integer id) {
-        getReviewById(id);
+        Review review = getReviewById(id);
+        feedDbStorage.addFeed(new Feed(review.getUserId(), "REVIEW", "REMOVE", id));
         return reviewDao.deleteReviewById(id);
     }
 
