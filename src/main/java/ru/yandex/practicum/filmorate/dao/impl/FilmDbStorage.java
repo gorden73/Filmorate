@@ -68,6 +68,15 @@ public class FilmDbStorage implements FilmStorage {
             "film_id ) GROUP BY user_id ORDER BY count DESC) GROUP BY user_id ORDER BY " +
             "COUNT(film_id) DESC LIMIT 1) AND film_id NOT IN (SELECT film_id FROM likes WHERE " +
             "user_id = ?))";
+    private static final String SQL_SEARCH_FILM = "SELECT f.film_id, f.name, f.description," +
+            " f.release_date, f.duration, f.mpa, COUNT(DISTINCT l.user_id) AS amount_likes" +
+            " FROM films AS f " +
+            " LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+            " LEFT JOIN film_director AS fd ON fd.film_id = f.film_id " +
+            " LEFT JOIN directors AS d ON d.id = fd.director_id " +
+            " WHERE %s " +
+            " GROUP BY f.film_id " +
+            " ORDER BY amount_likes DESC";
     private static final String SQL_POPULAR_FILM = "SELECT f.film_id AS id, f.name, f.description, " +
             "f.release_date, f.duration AS duration, f.mpa AS mpa " +
             "FROM films AS f " +
@@ -216,6 +225,31 @@ public class FilmDbStorage implements FilmStorage {
                     (rs, rowNum) -> makeFilm(rs), year);
         }
         return getPopularFilms();
+    }
+
+    @Override
+    public Collection<Film> getFilmsBySearch(String query, String by) {
+        if (by.contains("director") && by.contains("title")) {
+            String formattedSql = String.format(SQL_SEARCH_FILM,
+                    "REPLACE (LOWER (f.name), ' ', '') LIKE ? " +
+                            "OR REPLACE (LOWER (d.name), ' ', '') LIKE ? ");
+            return jdbcTemplate.query(formattedSql,
+                    (rs, rowNum) -> makeFilm(rs), "%%" + query + "%%",
+                    "%%" + query + "%%");
+        }
+        if (by.equals("director")) {
+            String formattedSql = String.format(SQL_SEARCH_FILM,
+                    "REPLACE (LOWER (d.name), ' ', '') LIKE ? ");
+            return jdbcTemplate.query(formattedSql,
+                    (rs, rowNum) -> makeFilm(rs), "%%" + query + "%%");
+        }
+        if (by.equals("title")) {
+            String formattedSql = String.format(SQL_SEARCH_FILM,
+                    "REPLACE (LOWER (f.name), ' ', '') LIKE ? ");
+            return jdbcTemplate.query(formattedSql,
+                    (rs, rowNum) -> makeFilm(rs), "%%" + query + "%%");
+        }
+        return List.of();
     }
 
     @Override

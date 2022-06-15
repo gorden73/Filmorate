@@ -64,6 +64,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
+    @Override
+    public Collection<Film> getFilmsBySearch(String query, String by) {
+        return null;
+    }
+
     public Integer addLike(Integer filmId, Integer userId) {
         films.get(filmId).getLikes().add(userId);
         return userId;
