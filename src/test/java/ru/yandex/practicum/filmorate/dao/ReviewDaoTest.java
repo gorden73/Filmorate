@@ -54,11 +54,11 @@ public class ReviewDaoTest {
         Collection<Review> reviews = reviewDao.getAllReviews(10);
         assertThat(reviews).hasSize(1);
         Review review = new ArrayList<>(reviews).get(0);
-        assertEquals(1, review.getReviewId());
+        assertEquals(1, review.getId());
         assertEquals(1, review.getUserId());
         assertEquals(1, review.getFilmId());
         assertEquals("Great", review.getContent());
-        assertTrue(review.isPositive());
+        assertTrue(review.getIsPositive());
         assertEquals(0, review.getUseful());
     }
 
@@ -83,11 +83,11 @@ public class ReviewDaoTest {
         Collection<Review> reviews = reviewDao.getAllReviews(10);
         assertThat(reviews).hasSize(2);
         Review usefulReview = new ArrayList<>(reviews).get(0);
-        assertEquals(2, usefulReview.getReviewId());
+        assertEquals(2, usefulReview.getId());
         assertEquals(1, usefulReview.getUserId());
         assertEquals(2, usefulReview.getFilmId());
         assertEquals("Great", usefulReview.getContent());
-        assertTrue(usefulReview.isPositive());
+        assertTrue(usefulReview.getIsPositive());
         assertEquals(1, usefulReview.getUseful());
     }
 
@@ -95,11 +95,11 @@ public class ReviewDaoTest {
     void shouldReturnReviewById() {
         reviewDao.addReview(review1);
         Review review = reviewDao.getReviewById(1);
-        assertEquals(1, review.getReviewId());
+        assertEquals(1, review.getId());
         assertEquals(1, review.getUserId());
         assertEquals(1, review.getFilmId());
         assertEquals("Great", review.getContent());
-        assertTrue(review.isPositive());
+        assertTrue(review.getIsPositive());
         assertEquals(0, review.getUseful());
     }
 
@@ -109,6 +109,6 @@ public class ReviewDaoTest {
         reviewDao.updateReview(reviewUPD);
         Review review = reviewDao.getReviewById(1);
         assertEquals("Terrible", review.getContent());
-        assertFalse(review.isPositive());
+        assertFalse(review.getIsPositive());
     }
 }
