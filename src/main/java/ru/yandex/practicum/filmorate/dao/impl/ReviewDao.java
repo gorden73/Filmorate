@@ -98,7 +98,7 @@ public class ReviewDao {
             statement.setInt(1, review.getUserId());
             statement.setInt(2, review.getFilmId());
             statement.setString(3, review.getContent());
-            statement.setBoolean(4, review.isPositive());
+            statement.setBoolean(4, review.getIsPositive());
             return statement;
         }, keyHolder);
         int id = keyHolder.getKey().intValue();
@@ -108,9 +108,9 @@ public class ReviewDao {
 
     public Review updateReview(Review newReview) {
         jdbcTemplate.update(UPDATE_REVIEW_QUERY, newReview.getContent(),
-                            newReview.isPositive(), newReview.getReviewId());
-        log.debug("Обновлен отзыв {}.", newReview.getReviewId());
-        return getReviewById(newReview.getReviewId());
+                            newReview.getIsPositive(), newReview.getId());
+        log.debug("Обновлен отзыв {}.", newReview.getId());
+        return getReviewById(newReview.getId());
     }
 
     public Integer deleteReviewById(Integer id) {

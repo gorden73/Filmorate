@@ -40,7 +40,7 @@ public class ReviewService {
     public Review addReview(Review review) {
         userService.findUserById(review.getUserId());
         filmService.getFilm(review.getFilmId());
-        if (review.getReviewId() != null) {
+        if (review.getId() != null) {
             log.warn("При создании отзыва был передан id.");
             throw new ValidationException("При создании отзыва был передан id. " +
                                           "Идентификатор назначается автоматически.");
@@ -49,7 +49,7 @@ public class ReviewService {
     }
 
     public Review updateReview(Review newReview) {
-        getReviewById(newReview.getReviewId());
+        getReviewById(newReview.getId());
         return reviewDao.updateReview(newReview);
     }
 
