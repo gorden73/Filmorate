@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import javax.validation.constraints.Min;
 import java.util.Collection;
 
 @Slf4j
@@ -105,8 +104,8 @@ public class FilmController {
 
     @GetMapping("/search")
     public Collection<Film> getFilmsBySearch(
-            @RequestParam (defaultValue = "") String query,
-            @RequestParam (defaultValue = "") String by) {
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "") String by) {
         return filmService.getFilmsBySearch(query, by);
     }
 }

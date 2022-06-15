@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.service.FeedService;
 
 import java.util.Collection;
-import java.util.List;
 
 @RequestMapping("/users")
 @RestController

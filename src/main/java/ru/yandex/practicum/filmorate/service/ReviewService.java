@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorage;
-import ru.yandex.practicum.filmorate.model.Feed;
-import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.dao.impl.ReviewDao;
 import ru.yandex.practicum.filmorate.dao.impl.ReviewLikeDao;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.Collection;
 
@@ -47,7 +47,7 @@ public class ReviewService {
         if (review.getId() != null) {
             log.warn("При создании отзыва был передан id.");
             throw new ValidationException("При создании отзыва был передан id. " +
-                                          "Идентификатор назначается автоматически.");
+                    "Идентификатор назначается автоматически.");
         }
         Review newReview = reviewDao.addReview(review);
         feedDbStorage.addFeed(new Feed(review.getUserId(), "REVIEW", "ADD", newReview.getId()));

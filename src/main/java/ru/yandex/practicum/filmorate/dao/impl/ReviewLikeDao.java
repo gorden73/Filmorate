@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 @Slf4j
 @Repository
@@ -11,10 +11,10 @@ public class ReviewLikeDao {
     private final JdbcTemplate jdbcTemplate;
     private final static String ADD_LIKE_QUERY =
             "MERGE INTO review_like (user_id, review_id, is_like) " +
-            "VALUES (?, ?, true);";
+                    "VALUES (?, ?, true);";
     private final static String ADD_DISLIKE_QUERY =
             "MERGE INTO review_like (user_id, review_id, is_like) " +
-            "VALUES (?, ?, false);";
+                    "VALUES (?, ?, false);";
     private final static String DELETE_QUERY =
             "DELETE FROM review_like WHERE user_id = ? AND review_id = ?;";
 

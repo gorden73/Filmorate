@@ -37,6 +37,7 @@ public class FeedDbStorage {
     public FeedDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     public List<Feed> getFeedByUserId(Integer id) {
         return jdbcTemplate.query(SQL_GET_FEED_BY_USER_ID, (rs, rowNum) -> makeFeed(rs), id);
     }

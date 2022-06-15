@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.EqualsAndHashCode;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,6 +31,7 @@ public class Review {
     public Review() {
         super();
     }
+
     @JsonCreator
     public Review(String content, boolean isPositive,
                   Integer userId, Integer filmId, Integer useful) {
@@ -42,7 +43,7 @@ public class Review {
     }
 
     public Review(Integer id, String content, boolean isPositive,
-                                        Integer userId, Integer filmId, Integer useful) {
+                  Integer userId, Integer filmId, Integer useful) {
         this.id = id;
         this.content = content;
         this.isPositive = isPositive;

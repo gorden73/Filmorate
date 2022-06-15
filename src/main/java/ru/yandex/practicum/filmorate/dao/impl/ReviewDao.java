@@ -1,18 +1,18 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.dao.EmptyResultDataAccessException;
-import ru.yandex.practicum.filmorate.model.Review;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.model.Review;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 import java.util.Collection;
 
 @Slf4j
@@ -21,51 +21,51 @@ public class ReviewDao {
     private final JdbcTemplate jdbcTemplate;
     private final static String GET_REVIEW_BY_ID_QUERY =
             "SELECT r.id, " +
-            "       r.user_id, " +
-            "       r.film_id, " +
-            "       r.content, " +
-            "       r.is_positive, " +
-            "       SUM(CASE WHEN rl.is_like = true THEN 1 ELSE 0 END) - " +
-            "       SUM(CASE WHEN rl.is_like = false THEN 1 ELSE 0 END) AS useful " +
-            "FROM reviews AS r " +
-            "LEFT JOIN review_like AS rl ON r.id = rl.review_id " +
-            "WHERE r.id = ? " +
-            "GROUP BY r.id;";
+                    "       r.user_id, " +
+                    "       r.film_id, " +
+                    "       r.content, " +
+                    "       r.is_positive, " +
+                    "       SUM(CASE WHEN rl.is_like = true THEN 1 ELSE 0 END) - " +
+                    "       SUM(CASE WHEN rl.is_like = false THEN 1 ELSE 0 END) AS useful " +
+                    "FROM reviews AS r " +
+                    "LEFT JOIN review_like AS rl ON r.id = rl.review_id " +
+                    "WHERE r.id = ? " +
+                    "GROUP BY r.id;";
     private final static String GET_ALL_REVIEWS_QUERY =
             "SELECT r.id, " +
-            "       r.user_id, " +
-            "       r.film_id, " +
-            "       r.content, " +
-            "       r.is_positive, " +
-            "       SUM(CASE WHEN rl.is_like = true THEN 1 ELSE 0 END) - " +
-            "       SUM(CASE WHEN rl.is_like = false THEN 1 ELSE 0 END) AS useful " +
-            "FROM reviews AS r " +
-            "LEFT JOIN review_like AS rl ON r.id = rl.review_id " +
-            "GROUP BY r.id " +
-            "ORDER BY useful DESC " +
-            "LIMIT ?;";
+                    "       r.user_id, " +
+                    "       r.film_id, " +
+                    "       r.content, " +
+                    "       r.is_positive, " +
+                    "       SUM(CASE WHEN rl.is_like = true THEN 1 ELSE 0 END) - " +
+                    "       SUM(CASE WHEN rl.is_like = false THEN 1 ELSE 0 END) AS useful " +
+                    "FROM reviews AS r " +
+                    "LEFT JOIN review_like AS rl ON r.id = rl.review_id " +
+                    "GROUP BY r.id " +
+                    "ORDER BY useful DESC " +
+                    "LIMIT ?;";
     private final static String GET_REVIEWS_BY_FILM_QUERY =
             "SELECT r.id, " +
-            "       r.user_id, " +
-            "       r.film_id, " +
-            "       r.content, " +
-            "       r.is_positive, " +
-            "       SUM(CASE WHEN rl.is_like = true THEN 1 ELSE 0 END) - " +
-            "       SUM(CASE WHEN rl.is_like = false THEN 1 ELSE 0 END) AS useful " +
-            "FROM reviews AS r " +
-            "LEFT JOIN review_like AS rl ON r.id = rl.review_id " +
-            "WHERE r.film_id = ? " +
-            "GROUP BY r.id " +
-            "ORDER BY useful DESC " +
-            "LIMIT ?;";
+                    "       r.user_id, " +
+                    "       r.film_id, " +
+                    "       r.content, " +
+                    "       r.is_positive, " +
+                    "       SUM(CASE WHEN rl.is_like = true THEN 1 ELSE 0 END) - " +
+                    "       SUM(CASE WHEN rl.is_like = false THEN 1 ELSE 0 END) AS useful " +
+                    "FROM reviews AS r " +
+                    "LEFT JOIN review_like AS rl ON r.id = rl.review_id " +
+                    "WHERE r.film_id = ? " +
+                    "GROUP BY r.id " +
+                    "ORDER BY useful DESC " +
+                    "LIMIT ?;";
     private final static String ADD_REVIEW_QUERY =
             "INSERT INTO reviews (user_id, film_id, content, is_positive) " +
-            "VALUES (?, ?, ?, ?);";
+                    "VALUES (?, ?, ?, ?);";
     private final static String UPDATE_REVIEW_QUERY =
             "UPDATE reviews " +
-            "SET content = ?, " +
-            "    is_positive = ? " +
-            "WHERE id = ?;";
+                    "SET content = ?, " +
+                    "    is_positive = ? " +
+                    "WHERE id = ?;";
     private final static String DELETE_REVIEW_BY_ID_QUERY = "DELETE FROM reviews WHERE id = ?;";
 
     @Autowired
@@ -108,7 +108,7 @@ public class ReviewDao {
 
     public Review updateReview(Review newReview) {
         jdbcTemplate.update(UPDATE_REVIEW_QUERY, newReview.getContent(),
-                            newReview.isPositive(), newReview.getId());
+                newReview.isPositive(), newReview.getId());
         log.debug("Обновлен отзыв {}.", newReview.getId());
         return getReviewById(newReview.getId());
     }

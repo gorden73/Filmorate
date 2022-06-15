@@ -36,6 +36,7 @@ public class FilmService {
         this.directorService = directorService;
         this.userService = userService;
     }
+
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        DirectorService directorService, UserService userService, FeedDbStorage feedDbStorage) {
@@ -166,7 +167,7 @@ public class FilmService {
     }
 
     public Collection<Film> getPopularFilms(Integer genreId, Integer year,
-                                             Integer count, Integer from) {
+                                            Integer count, Integer from) {
         return filmStorage.getPopularFilms(genreId, year)
                 .stream()
                 .skip(from)

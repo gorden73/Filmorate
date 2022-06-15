@@ -76,7 +76,7 @@ public class FriendDaoImpl implements FriendDao {
 
     private boolean checkFriend(Integer id, Integer friendId) {
         List<Integer> friends = jdbcTemplate.query(SQL_CHECK_FRIEND, (rs, rowNum) ->
-                        rs.getInt("friend_id"), friendId, id);
+                rs.getInt("friend_id"), friendId, id);
         if (friends.contains(id)) {
             return true;
         }

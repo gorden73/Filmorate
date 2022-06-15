@@ -8,7 +8,7 @@ public class IncorrectParameterException extends RuntimeException {
         this.param = param;
     }
 
-    public String getParam(){
+    public String getParam() {
         return param;
     }
 
