@@ -59,10 +59,7 @@ public class FilmDbStorage implements FilmStorage {
             "ORDER BY COUNT(DISTINCT likes_id) DESC";
     private static final String SQL_GET_FILM = "SELECT * FROM films AS f LEFT JOIN likes AS l " +
             "ON f.film_id = l.film_id WHERE f.film_id = ? GROUP BY f.film_id, l.likes_id";
-    private static final String SQL_GET_TOP_FILMS = "SELECT f.film_id, f.name, f.description, " +
-            "f.release_date, f.duration, f.mpa, l.user_id FROM likes AS l RIGHT JOIN films AS f " +
-            "ON f.film_id = l.film_id GROUP BY f.film_id, l.user_id ORDER BY COUNT(l.user_id) " +
-            "DESC LIMIT ?";
+
     private static final String SQL_GET_RECOMMENDATION_FILM = "SELECT film_id, name, description," +
             " release_date, duration, mpa FROM films WHERE film_id IN (SELECT film_id FROM likes" +
             " WHERE user_id IN (SELECT user_id FROM likes WHERE user_id IN (SELECT user_id FROM" +
@@ -71,18 +68,28 @@ public class FilmDbStorage implements FilmStorage {
             "film_id ) GROUP BY user_id ORDER BY count DESC) GROUP BY user_id ORDER BY " +
             "COUNT(film_id) DESC LIMIT 1) AND film_id NOT IN (SELECT film_id FROM likes WHERE " +
             "user_id = ?))";
-    private static final String SQL_GET_FILMS_BY_YEAR = "SELECT f.film_id, f.name, f.description, " +
-            "       f.release_date AS year, f.duration, f.mpa, d.id FROM films AS f " +
-            "       JOIN film_director AS fd ON fd.film_id = f.film_id " +
-            "       JOIN directors AS d ON d.id = fd.director_id " +
+    private static final String SQL_POPULAR_FILM = "SELECT f.film_id AS id, f.name, f.description, " +
+            "f.release_date, f.duration AS duration, f.mpa AS mpa " +
+            "FROM films AS f " +
+            "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+            "LEFT JOIN film_genre AS fg ON fg.film_id = f.film_id " +
+            " WHERE %s " +
+            " GROUP BY f.film_id " +
+            " ORDER BY COUNT(DISTINCT l.user_id) DESC";
+
+    private static final String SQL_GET_FILMS_BY_YEAR = "SELECT f.film_id, f.name, " +
+            "f.description, f.release_date AS year, f.duration, f.mpa, d.id FROM films AS f " +
+            "JOIN film_director AS fd ON fd.film_id = f.film_id " +
+            "JOIN directors AS d ON d.id = fd.director_id " +
             "WHERE d.id = ? " +
             "GROUP BY f.film_id " +
             "ORDER BY year DESC";
-    private static final String SQL_GET_FILMS_BY_LIKES = "SELECT f.film_id, f.name, f.description, " +
-            "       f.release_date, f.duration, f.mpa, d.id, COUNT(l.likes_id) AS likes FROM films AS f " +
-            "       JOIN film_director AS fd ON fd.film_id = f.film_id " +
-            "       JOIN directors AS d ON d.id = fd.director_id " +
-            "       LEFT JOIN likes AS l ON l.film_id = f.film_id " +
+    private static final String SQL_GET_FILMS_BY_LIKES = "SELECT f.film_id, f.name, " +
+            "f.description, f.release_date, f.duration, f.mpa, d.id, COUNT(l.likes_id) AS likes " +
+            "FROM films AS f " +
+            "JOIN film_director AS fd ON fd.film_id = f.film_id " +
+            "JOIN directors AS d ON d.id = fd.director_id " +
+            "LEFT JOIN likes AS l ON l.film_id = f.film_id " +
             "WHERE d.id = ? " +
             "GROUP BY f.film_id " +
             "ORDER BY likes DESC";
@@ -183,12 +190,32 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilms(Integer count) {
-        Collection<Film> films = jdbcTemplate.query(SQL_GET_TOP_FILMS, (rs, rowNum) -> makeFilm(rs),
-                count);
-        log.debug("Запрошено {} популярных фильмов.", count);
-        return films.isEmpty() ? jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs))
-                : films;
+    public Collection<Film> getPopularFilms() {
+        String formattedSql = String.format(SQL_POPULAR_FILM, "1 = 1");
+        return jdbcTemplate.query(formattedSql,
+                (rs, rowNum) -> makeFilm(rs));
+    }
+
+    @Override
+    public Collection<Film> getPopularFilms(Integer genreId, Integer year) {
+        if (genreId != null && year != null) {
+            String formattedSql = String.format(SQL_POPULAR_FILM,
+                    "fg.genre_id = ? AND YEAR (f.release_date) = ?");
+            return jdbcTemplate.query(formattedSql,
+                    (rs, rowNum) -> makeFilm(rs), genreId, year);
+        }
+        if (genreId != null) {
+            String formattedSql = String.format(SQL_POPULAR_FILM, "fg.genre_id = ?");
+            return jdbcTemplate.query(formattedSql,
+                    (rs, rowNum) -> makeFilm(rs), genreId);
+        }
+        if (year != null) {
+            String formattedSql = String.format(SQL_POPULAR_FILM,
+                    "YEAR (f.release_date) = ?");
+            return jdbcTemplate.query(formattedSql,
+                    (rs, rowNum) -> makeFilm(rs), year);
+        }
+        return getPopularFilms();
     }
 
     @Override
