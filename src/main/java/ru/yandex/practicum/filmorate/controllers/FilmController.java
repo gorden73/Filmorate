@@ -56,9 +56,4 @@ public class FilmController {
     public Film getFilm(@PathVariable Integer id) {
         return filmService.getFilm(id);
     }
-
-    @GetMapping("/user/{id}/recommendations")
-    public Collection<Film> getRecommendations(@PathVariable Integer id) {
-        return filmService.getRecommendations(id);
-    }
 }

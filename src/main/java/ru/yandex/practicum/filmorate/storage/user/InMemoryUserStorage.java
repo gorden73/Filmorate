@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -81,5 +82,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     public User getUser(Integer id) {
         return users.get(id);
+    }
+
+    public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
+        return null;
     }
 }

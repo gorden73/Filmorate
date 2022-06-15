@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class FilmDbStorageTest {
     private final FilmDbStorage filmDbStorage;
+
+    private final LikesDao likesDao;
     private Film film;
     private Film film1;
 
@@ -44,7 +45,8 @@ class FilmDbStorageTest {
         Film returnedFilm = films.get(1);
         assertThat(returnedFilm.getId()).isEqualTo(1);
         assertThat(returnedFilm.getName()).isEqualTo("The Rock");
-        assertThat(returnedFilm.getDescription()).isEqualTo("Starring Nicolas Cage and Sean Connery");
+        assertThat(returnedFilm.getDescription()).isEqualTo("Starring Nicolas Cage and " +
+                "Sean Connery");
         assertThat(returnedFilm.getReleaseDate()).isEqualTo("1996-06-07");
         assertThat(returnedFilm.getDuration()).isEqualTo(136);
         assertThat(returnedFilm.getMpa().getId()).isEqualTo(1);
@@ -96,8 +98,9 @@ class FilmDbStorageTest {
 
     @Test
     void shouldUpdateFilmWhenFilmHasNotGenres() {
-        Film updateFilm = new Film(1, "updateName", "updateDescription", LocalDate.of(2000, 12, 12),
-                100, new Mpa(4), new HashSet<>(), null);
+        Film updateFilm = new Film(1, "updateName", "updateDescription",
+                LocalDate.of(2000, 12, 12), 100, new Mpa(4),
+                new HashSet<>(), null);
         filmDbStorage.updateFilm(updateFilm);
         assertThat(updateFilm).isEqualTo(filmDbStorage.getAllFilms().get(1));
     }
@@ -105,8 +108,9 @@ class FilmDbStorageTest {
     @Test
     void shouldUpdateFilmWhenFilmHasGenres() {
         filmDbStorage.addFilm(film1);
-        Film updateFilm = new Film(2, "updateName", "updateDescription", LocalDate.of(2000, 12, 12),
-                100, new Mpa(4), new HashSet<>(), new HashSet<>(List.of(new Genre(3), new Genre(4))));
+        Film updateFilm = new Film(2, "updateName", "updateDescription",
+                LocalDate.of(2000, 12, 12), 100, new Mpa(4),
+                new HashSet<>(), new HashSet<>(List.of(new Genre(3), new Genre(4))));
         filmDbStorage.updateFilm(updateFilm);
         assertThat(updateFilm).isEqualTo(filmDbStorage.getAllFilms().get(2));
     }
@@ -122,7 +126,22 @@ class FilmDbStorageTest {
     @Test
     void shouldReturnFilmById() {
         assertThat(filmDbStorage.getFilm(1)).isEqualTo(new Film(1, "The Rock",
+                "Starring Nicolas Cage and Sean Connery",
+                LocalDate.of(1996, 6, 7), 136, new Mpa(1),
+                new HashSet<>(), null));
+    }
+
+    @Test
+    void shouldReturnPopularFilms() {
+        Film film = new Film(2, "The Rock1", "Starring Nicolas Cage and Sean" +
+                " Connery1", LocalDate.of(1995, 6, 7), 137, new Mpa(2),
+                new HashSet<>());
+        filmDbStorage.addFilm(film);
+        likesDao.addLike(2, 1);
+        assertThat(filmDbStorage.getPopularFilms(2)).isEqualTo(List.of(new Film(2, "The Rock1",
+                "Starring Nicolas Cage and Sean Connery1", LocalDate.of(1995, 6, 7),
+                137, new Mpa(2), new HashSet<>(List.of(1)), null), new Film(1, "The Rock",
                 "Starring Nicolas Cage and Sean Connery", LocalDate.of(1996, 6, 7),
-                136, new Mpa(1), new HashSet<>(), null));
+                136, new Mpa(1), null)));
     }
 }

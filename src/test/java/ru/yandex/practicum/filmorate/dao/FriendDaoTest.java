@@ -30,7 +30,8 @@ class FriendDaoTest {
     @BeforeEach
     public void createUserForTests() {
         user = new User(2, "salvador@mail.ru", "chico", "Poco",
-                LocalDate.of(1990, 10, 6), new HashSet<>(), new HashMap<>(), new HashSet<>());
+                LocalDate.of(1990, 10, 6), new HashSet<>(), new HashMap<>(),
+                new HashSet<>());
     }
 
     @Test
@@ -70,7 +71,8 @@ class FriendDaoTest {
     @Test
     void shouldReturnMutualFriends() {
         User common = new User(3, "common@mail.ru", "common", "common",
-                LocalDate.of(1980, 10, 6), new HashSet<>(), new HashMap<>(), new HashSet<>());
+                LocalDate.of(1980, 10, 6), new HashSet<>(), new HashMap<>(),
+                new HashSet<>());
         userDbStorage.addUser(user);
         userDbStorage.addUser(common);
         friendDao.addToFriends(1, 3);
