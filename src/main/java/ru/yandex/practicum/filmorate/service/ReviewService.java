@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorage;
-import ru.yandex.practicum.filmorate.dao.impl.ReviewDao;
-import ru.yandex.practicum.filmorate.dao.impl.ReviewLikeDao;
+import ru.yandex.practicum.filmorate.dao.FeedDao;
+import ru.yandex.practicum.filmorate.dao.ReviewDao;
+import ru.yandex.practicum.filmorate.dao.ReviewLikeDao;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -19,11 +19,12 @@ public class ReviewService {
     private final ReviewLikeDao reviewLikeDao;
     private final UserService userService;
     private final FilmService filmService;
-    private final FeedDbStorage feedDbStorage;
+    private final FeedDao feedDbStorage;
 
     @Autowired
     public ReviewService(ReviewDao reviewDao, ReviewLikeDao reviewLikeDao,
-                         UserService userService, FilmService filmService, FeedDbStorage feedDbStorage) {
+                         UserService userService, FilmService filmService,
+                         FeedDao feedDbStorage) {
         this.reviewDao = reviewDao;
         this.reviewLikeDao = reviewLikeDao;
         this.userService = userService;

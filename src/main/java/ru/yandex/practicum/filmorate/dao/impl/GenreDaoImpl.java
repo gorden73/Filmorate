@@ -21,6 +21,7 @@ public class GenreDaoImpl implements GenreDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Genre getGenreById(Integer id) {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(SQL_GET_GENRE_BY_ID, id);
         if (rowSet.next()) {
@@ -30,6 +31,7 @@ public class GenreDaoImpl implements GenreDao {
         return new Genre(0);
     }
 
+    @Override
     public Collection<Genre> getAllGenres() {
         log.debug("Запрошены все жанры.");
         return jdbcTemplate.query(SQL_GET_ALL_GENRES, (rs, rowNum) ->

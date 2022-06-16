@@ -2,9 +2,8 @@ package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.dao.FeedDao;
 import ru.yandex.practicum.filmorate.model.Feed;
 
 import java.sql.ResultSet;
@@ -12,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-public class FeedDbStorage {
+public class FeedDaoImpl implements FeedDao {
     private final JdbcTemplate jdbcTemplate;
     private static final String SQL_GET_FEED_BY_USER_ID = "" +
             "SELECT time_stamp, user_id, event_type, operation, event_id, entity_id " +
@@ -34,14 +33,16 @@ public class FeedDbStorage {
     private static final String SQL_GET_USER = "SELECT user_id FROM users WHERE user_id=?";
 
     @Autowired
-    public FeedDbStorage(JdbcTemplate jdbcTemplate) {
+    public FeedDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<Feed> getFeedByUserId(Integer id) {
         return jdbcTemplate.query(SQL_GET_FEED_BY_USER_ID, (rs, rowNum) -> makeFeed(rs), id);
     }
 
+    @Override
     public void addFeed(Feed feed) {
         Integer eventTypeId = jdbcTemplate.queryForObject(SQL_GET_EV_ID,
                 (rs, rowNum) -> rs.getInt("id"),
@@ -66,12 +67,5 @@ public class FeedDbStorage {
                 (rs_op, rowNum) -> rs_op.getString("name"), operationId);
         return new Feed(timestamp, userId, eventType,
                 operation, eventId, entityId);
-    }
-
-    public void checkUser(Integer id) {
-        SqlRowSet userRow = jdbcTemplate.queryForRowSet(SQL_GET_USER, id);
-        if (!userRow.next()) {
-            throw new ElementNotFoundException("пользователь с id = " + id);
-        }
     }
 }

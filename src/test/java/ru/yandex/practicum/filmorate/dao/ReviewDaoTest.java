@@ -1,20 +1,17 @@
 package ru.yandex.practicum.filmorate.dao;
 
-import org.junit.jupiter.api.Test;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.dao.impl.FilmDbStorage;
-import ru.yandex.practicum.filmorate.dao.impl.ReviewDao;
-import ru.yandex.practicum.filmorate.dao.impl.ReviewLikeDao;
 import ru.yandex.practicum.filmorate.dao.impl.UserDbStorage;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -58,7 +55,7 @@ public class ReviewDaoTest {
         assertEquals(1, review.getUserId());
         assertEquals(1, review.getFilmId());
         assertEquals("Great", review.getContent());
-        assertTrue(review.isPositive());
+        assertTrue(review.getIsPositive());
         assertEquals(0, review.getUseful());
     }
 
@@ -87,7 +84,7 @@ public class ReviewDaoTest {
         assertEquals(1, usefulReview.getUserId());
         assertEquals(2, usefulReview.getFilmId());
         assertEquals("Great", usefulReview.getContent());
-        assertTrue(usefulReview.isPositive());
+        assertTrue(usefulReview.getIsPositive());
         assertEquals(1, usefulReview.getUseful());
     }
 
@@ -99,7 +96,7 @@ public class ReviewDaoTest {
         assertEquals(1, review.getUserId());
         assertEquals(1, review.getFilmId());
         assertEquals("Great", review.getContent());
-        assertTrue(review.isPositive());
+        assertTrue(review.getIsPositive());
         assertEquals(0, review.getUseful());
     }
 
@@ -109,6 +106,6 @@ public class ReviewDaoTest {
         reviewDao.updateReview(reviewUPD);
         Review review = reviewDao.getReviewById(1);
         assertEquals("Terrible", review.getContent());
-        assertFalse(review.isPositive());
+        assertFalse(review.getIsPositive());
     }
 }

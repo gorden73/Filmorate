@@ -70,7 +70,7 @@ class UserDbStorageTest {
 
     @Test
     void shouldReturnUserById() {
-        assertThat(userDbStorage.getUserById(1).get()).isEqualTo(new User(1,"mail", "login",
+        assertThat(userDbStorage.getUserById(1).get()).isEqualTo(new User(1, "mail", "login",
                 "name",
                 LocalDate.of(1990, 03, 8)));
     }

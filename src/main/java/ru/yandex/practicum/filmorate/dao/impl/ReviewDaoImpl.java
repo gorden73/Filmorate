@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.ReviewDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 
@@ -17,7 +18,7 @@ import java.util.Collection;
 
 @Slf4j
 @Repository
-public class ReviewDao {
+public class ReviewDaoImpl implements ReviewDao {
     private final JdbcTemplate jdbcTemplate;
     private final static String GET_REVIEW_BY_ID_QUERY =
             "SELECT r.id, " +
@@ -69,10 +70,11 @@ public class ReviewDao {
     private final static String DELETE_REVIEW_BY_ID_QUERY = "DELETE FROM reviews WHERE id = ?;";
 
     @Autowired
-    public ReviewDao(JdbcTemplate jdbcTemplate) {
+    public ReviewDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Review getReviewById(Integer id) {
         try {
             return jdbcTemplate.queryForObject(GET_REVIEW_BY_ID_QUERY, this::mapRowToReview, id);
@@ -82,14 +84,17 @@ public class ReviewDao {
         }
     }
 
+    @Override
     public Collection<Review> getAllReviews(Integer count) {
         return jdbcTemplate.query(GET_ALL_REVIEWS_QUERY, this::mapRowToReview, count);
     }
 
+    @Override
     public Collection<Review> getReviewsByFilmId(Integer filmId, Integer count) {
         return jdbcTemplate.query(GET_REVIEWS_BY_FILM_QUERY, this::mapRowToReview, filmId, count);
     }
 
+    @Override
     public Review addReview(Review review) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -98,7 +103,7 @@ public class ReviewDao {
             statement.setInt(1, review.getUserId());
             statement.setInt(2, review.getFilmId());
             statement.setString(3, review.getContent());
-            statement.setBoolean(4, review.isPositive());
+            statement.setBoolean(4, review.getIsPositive());
             return statement;
         }, keyHolder);
         int id = keyHolder.getKey().intValue();
@@ -106,13 +111,15 @@ public class ReviewDao {
         return getReviewById(id);
     }
 
+    @Override
     public Review updateReview(Review newReview) {
         jdbcTemplate.update(UPDATE_REVIEW_QUERY, newReview.getContent(),
-                newReview.isPositive(), newReview.getId());
+                newReview.getIsPositive(), newReview.getId());
         log.debug("Обновлен отзыв {}.", newReview.getId());
         return getReviewById(newReview.getId());
     }
 
+    @Override
     public Integer deleteReviewById(Integer id) {
         jdbcTemplate.update(DELETE_REVIEW_BY_ID_QUERY, id);
         log.debug("Удален отзыв {}.", id);

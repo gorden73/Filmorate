@@ -19,12 +19,14 @@ public class LikesDaoImpl implements LikesDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Integer addLike(Integer filmId, Integer userId) {
         jdbcTemplate.update(SQL_ADD_LIKE, userId, filmId);
         log.debug("Пользователь {} поставил like фильму {}", userId, filmId);
         return userId;
     }
 
+    @Override
     public Integer removeLike(Integer filmId, Integer userId) {
         jdbcTemplate.update(SQL_REMOVE_LIKE, userId, filmId);
         log.debug("Пользователь {} удалил свой like фильму {}", userId, filmId);

@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -43,13 +42,13 @@ class LikesDaoTest {
 
     @Test
     void shouldReturnPopularFilms() {
-        Film film = new Film(2,"The Rock1", "Starring Nicolas Cage and Sean Connery1",
+        Film film = new Film(2, "The Rock1", "Starring Nicolas Cage and Sean Connery1",
                 LocalDate.of(1995, 6, 7), 137, new Mpa(2), new HashSet<>());
         filmDbStorage.addFilm(film);
         likesDao.addLike(2, 1);
-        assertThat(filmDbStorage.getPopularFilms()).isEqualTo(List.of(new Film(2,"The Rock1",
+        assertThat(filmDbStorage.getPopularFilms()).isEqualTo(List.of(new Film(2, "The Rock1",
                 "Starring Nicolas Cage and Sean Connery1", LocalDate.of(1995, 6, 7),
-                137, new Mpa(2), new HashSet<>(List.of(1)), null, new HashSet<>()), new Film(1,"The Rock",
+                137, new Mpa(2), new HashSet<>(List.of(1)), null, new HashSet<>()), new Film(1, "The Rock",
                 "Starring Nicolas Cage and Sean Connery", LocalDate.of(1996, 6, 7),
                 136, new Mpa(1), new HashSet<>(), null, new HashSet<>())));
     }

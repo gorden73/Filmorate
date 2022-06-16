@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.impl.FeedDbStorage;
+import ru.yandex.practicum.filmorate.dao.FeedDao;
 import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
-    private FeedDbStorage feedDbStorage;
+    private FeedDao feedDbStorage;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
@@ -28,7 +28,7 @@ public class UserService {
 
     @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
-                       FeedDbStorage feedDbStorage) {
+                       FeedDao feedDbStorage) {
         this.userStorage = userStorage;
         this.feedDbStorage = feedDbStorage;
     }
@@ -133,12 +133,12 @@ public class UserService {
         return userStorage.getMutualFriends(id, id1);
     }
 
-    public Optional<User> findUserById(Integer id) {
+    public User findUserById(Integer id) {
         final Optional<User> optionalUser = userStorage.getUserById(id);
         if (optionalUser.isEmpty()) {
             log.error("Не найден пользователь {}.", id);
             throw new ElementNotFoundException(String.format("Пользователь c ID %s не найден", id));
         }
-        return userStorage.getUserById(id);
+        return optionalUser.get();
     }
 }

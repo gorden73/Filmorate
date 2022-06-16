@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exceptions.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -20,15 +19,17 @@ public class DirectorService {
         this.storage = storage;
     }
 
-    public Optional<Director> createDirector(Director director) {
+    public Director createDirector(Director director) {
         log.info(String.format("Создан режиссер %s", director.getName()));
-        return storage.create(director);
+        return storage.create(director).orElseThrow(() -> (new ElementNotFoundException(
+                String.format("Режиссер c ID %s не найден", director.getId()))));
     }
 
-    public Optional<Director> updateDirector(Director director) {
+    public Director updateDirector(Director director) {
         findDirectorById(director.getId());
         log.info(String.format("Обновлен режиссер %s", director.getName()));
-        return storage.update(director);
+        return storage.update(director).orElseThrow(() -> (new ElementNotFoundException(
+                String.format("Режиссер c ID %s не найден", director.getId()))));
     }
 
     public Collection<Director> getAllDirectors() {
@@ -37,12 +38,9 @@ public class DirectorService {
         return directorList;
     }
 
-    public Optional<Director> findDirectorById(Integer id) {
-        final Optional<Director> optionalDirector = storage.getDirector(id);
-        if (optionalDirector.isEmpty()) {
-            throw new ElementNotFoundException(String.format("Режиссер c ID %s не найден", id));
-        }
-        return storage.getDirector(id);
+    public Director findDirectorById(Integer id) {
+        return storage.getDirector(id).orElseThrow(() -> (new ElementNotFoundException(
+                String.format("Режиссер c ID %s не найден", id))));
     }
 
     public Integer removeDirector(Integer id) {

@@ -262,6 +262,7 @@ public class FilmDbStorage implements FilmStorage {
         return likesDao.removeLike(filmId, userId);
     }
 
+    @Override
     public Collection<Film> getRecommendations(Integer userId, Integer from, Integer size) {
         Collection<Film> films = jdbcTemplate.query(SQL_GET_RECOMMENDATION_FILM, (rs, rowNum) ->
                         makeFilm(rs), userId, userId, userId).stream()
@@ -289,6 +290,7 @@ public class FilmDbStorage implements FilmStorage {
                 (rs, rowNum) -> makeFilm(rs), directorId);
     }
 
+    @Override
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId, Integer count) {
         return jdbcTemplate.query(SQL_COMMON_FILMS,
                 (rs, rowNum) -> makeFilm(rs), userId, friendId);

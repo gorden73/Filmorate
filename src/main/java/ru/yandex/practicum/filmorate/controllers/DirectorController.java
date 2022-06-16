@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.service.DirectorService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.Optional;
 
 @RequestMapping("/directors")
 @RestController
@@ -27,17 +26,17 @@ public class DirectorController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Director> getDirector(@PathVariable Integer id) {
+    public Director getDirector(@PathVariable Integer id) {
         return service.findDirectorById(id);
     }
 
     @PostMapping
-    public Optional<Director> createDirector(@Valid @RequestBody Director director) {
+    public Director createDirector(@Valid @RequestBody Director director) {
         return service.createDirector(director);
     }
 
     @PutMapping
-    public Optional<Director> updateDirector(@Valid @RequestBody Director director) {
+    public Director updateDirector(@Valid @RequestBody Director director) {
         return service.updateDirector(director);
     }
 

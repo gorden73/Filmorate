@@ -98,22 +98,27 @@ public class UserDbStorage implements UserStorage {
         return id;
     }
 
+    @Override
     public User addToFriends(Integer id, Integer friendId) {
         return friendDao.addToFriends(id, friendId);
     }
 
+    @Override
     public Integer removeFromFriends(Integer id, Integer removeFromId) {
         return friendDao.removeFromFriends(id, removeFromId);
     }
 
+    @Override
     public Collection<User> getUserFriends(Integer id) {
         return friendDao.getUserFriends(id);
     }
 
+    @Override
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
         return friendDao.getMutualFriends(id, id1);
     }
 
+    @Override
     public Optional<User> getUserById(Integer id) {
         return jdbcTemplate
                 .query(SQL_GET_USER_BY_ID, (rs, rowNum) -> makeUser(rs), id)

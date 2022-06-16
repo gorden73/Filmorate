@@ -46,6 +46,7 @@ public class FriendDaoImpl implements FriendDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public User addToFriends(Integer id, Integer friendId) {
         jdbcTemplate.update(SQL_ADD_TO_FRIENDS, id, friendId);
         if (checkFriend(id, friendId)) {
@@ -62,6 +63,7 @@ public class FriendDaoImpl implements FriendDao {
         return null;
     }
 
+    @Override
     public Integer removeFromFriends(Integer id, Integer friendId) {
         if (!checkFriend(friendId, id)) {
             throw new ElementNotFoundException("пользователь " + friendId);
@@ -83,11 +85,13 @@ public class FriendDaoImpl implements FriendDao {
         return false;
     }
 
+    @Override
     public Collection<User> getUserFriends(Integer id) {
         log.debug("Запрошен список друзей пользователя {}.", id);
         return jdbcTemplate.query(SQL_GET_USER_FRIENDS, (rs, rowNum) -> makeUser(rs), id);
     }
 
+    @Override
     public Collection<User> getMutualFriends(Integer id, Integer id1) {
         log.debug("Запрошен список общих друзей пользователя {} и {}.", id, id1);
         return jdbcTemplate.query(SQL_GET_MUTUAL_FRIENDS, (rs, rowNum) -> makeUser(rs), id, id1);

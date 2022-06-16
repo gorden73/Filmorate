@@ -17,13 +17,15 @@ public class Review {
     @NotNull
     @JsonProperty("content")
     private String content;
+
     @NotNull
-    @JsonProperty("is_positive")
-    private boolean isPositive;
-    @JsonProperty("user_id")
+    @JsonProperty("isPositive")
+    private Boolean isPositive;
+    @NotNull
+    @JsonProperty("userId")
     private Integer userId;
     @NotNull
-    @JsonProperty("film_id")
+    @JsonProperty("filmId")
     private Integer filmId;
     @JsonProperty("useful")
     private Integer useful;
@@ -33,7 +35,7 @@ public class Review {
     }
 
     @JsonCreator
-    public Review(String content, boolean isPositive,
+    public Review(String content, Boolean isPositive,
                   Integer userId, Integer filmId, Integer useful) {
         this.content = content;
         this.isPositive = isPositive;
@@ -42,7 +44,7 @@ public class Review {
         this.useful = useful;
     }
 
-    public Review(Integer id, String content, boolean isPositive,
+    public Review(Integer id, String content, Boolean isPositive,
                   Integer userId, Integer filmId, Integer useful) {
         this.id = id;
         this.content = content;

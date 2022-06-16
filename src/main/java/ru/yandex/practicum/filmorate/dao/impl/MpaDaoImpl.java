@@ -22,6 +22,7 @@ public class MpaDaoImpl implements MpaDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Mpa getMpaById(Integer id) {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(SQL_GET_MPA_BY_ID, id);
         if (rowSet.next()) {
@@ -31,6 +32,7 @@ public class MpaDaoImpl implements MpaDao {
         return new Mpa(0);
     }
 
+    @Override
     public Collection<Mpa> getAllMpa() {
         log.debug("Запрошены все рейтинги.");
         return jdbcTemplate.query(SQL_GET_ALL_MPA, (rs, rowNum) -> new Mpa(rs.getInt("id")));
