@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.yandex.practicum.filmorate.dao.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -30,7 +31,8 @@ class FriendDaoTest {
     @BeforeEach
     public void createUserForTests() {
         user = new User(2, "salvador@mail.ru", "chico", "Poco",
-                LocalDate.of(1990, 10, 6), new HashSet<>(), new HashMap<>(), new HashSet<>());
+                LocalDate.of(1990, 10, 6), new HashSet<>(), new HashMap<>(),
+                new HashSet<>());
     }
 
     @Test
@@ -70,7 +72,8 @@ class FriendDaoTest {
     @Test
     void shouldReturnMutualFriends() {
         User common = new User(3, "common@mail.ru", "common", "common",
-                LocalDate.of(1980, 10, 6), new HashSet<>(), new HashMap<>(), new HashSet<>());
+                LocalDate.of(1980, 10, 6), new HashSet<>(), new HashMap<>(),
+                new HashSet<>());
         userDbStorage.addUser(user);
         userDbStorage.addUser(common);
         friendDao.addToFriends(1, 3);

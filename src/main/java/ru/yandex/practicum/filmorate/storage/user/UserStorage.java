@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 public interface UserStorage {
     Map<Integer, User> getAllUsers();
@@ -14,7 +15,7 @@ public interface UserStorage {
 
     Integer removeUser(Integer id);
 
-    User getUser(Integer id);
+    Optional<User> getUserById(Integer id);
 
     Collection<User> getMutualFriends(Integer id, Integer id1);
 

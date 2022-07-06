@@ -79,7 +79,8 @@ public class InMemoryUserStorage implements UserStorage {
         return friendsNames;
     }
 
-    public User getUser(Integer id) {
-        return users.get(id);
+    @Override
+    public Optional<User> getUserById(Integer id) {
+        return Optional.of(users.get(id));
     }
 }

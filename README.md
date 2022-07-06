@@ -1,7 +1,17 @@
 # Filmorate project
 Educational project on creating a service
 <br>for selecting films based on their rating
-<br>![ER diagram](https://github.com/gorden73/java-filmorate/blob/add-friends-likes/er-filmorate/ER-filmorate.png)
+
+<br>Фич-лист:
+<br> - Функциональность «Отзывы» (4 сторипоинта)
+<br> - Функциональность «Поиск» (5 сторипоинтов)
+<br> - Функциональность «Общие фильмы» (2 сторипоинта)
+<br> - Функциональность «Рекомендации» (5 сторипоинтов)
+<br> - Функциональность «Лента событий» (4 сторипоинта)
+<br> - Функциональность «Популярные фильмы» (2 сторипоинта)
+<br> - Функциональность «Фильмы по режиссёрам» (4 сторипоинта)
+
+<br>![ER diagram](/er-filmorate/ER-filmorate.png)
 <br>Примеры запросов:
 1. Выгрузка всех пользователей:
    <br>SELECT *
