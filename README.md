@@ -134,6 +134,8 @@
 <br>- *[Apache Maven](https://maven.apache.org/) 4.0.0* - управление зависимостями
 <br>- *[Project Lombok](https://projectlombok.org/) 1.18.24* - библиотека аннотаций для сокращения
 шаблонного кода
+<br>- *[JDBC](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html)* - 
+компонент Spring `JdbcTemplate`
 <br>- *[H2](https://ru.wikipedia.org/wiki/H2)* - база данных
 <br>- *[Postman](https://www.postman.com/downloads/) 9.31.0* - приложение для выполнения запросов
 к API.
