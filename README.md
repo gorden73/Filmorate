@@ -139,6 +139,8 @@
 <br>- *[H2](https://ru.wikipedia.org/wiki/H2)* - база данных
 <br>- *[Postman](https://www.postman.com/downloads/) 9.31.0* - приложение для выполнения запросов
 к API.
+<br>- *[JUnit](https://junit.org) 4.13.2* - фреймворк для модульного тестирования программного 
+обеспечения на языке Java
 
 ## Запуск приложения
 
